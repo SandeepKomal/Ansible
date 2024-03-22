@@ -1,0 +1,37 @@
+---
+- name: Install and configure Apache Maven
+  hosts: all
+  become: true
+  tasks:
+    - name: Change directory to /tmp
+      command: cd /tmp
+
+    - name: Download Apache Maven
+      get_url:
+        url: "https://dlcdn.apache.org/maven/maven-3/3.9.4/binaries/apache-maven-3.9.4-bin.tar.gz"
+        dest: /tmp/apache-maven-3.9.4-bin.tar.gz
+
+    - name: Extract Apache Maven
+      become: true
+      unarchive:
+        src: /tmp/apache-maven-3.9.4-bin.tar.gz
+        dest: /opt
+        remote_src: yes
+
+    - name: Create symbolic link for Apache Maven
+      become: true
+      file:
+        src: "/opt/apache-maven-3.9.4"
+        dest: "/opt/maven"
+        state: link
+
+    - name: Create maven.sh file
+      become: true
+      template:
+        src: maven.sh.j2
+        dest: /etc/profile.d/maven.sh
+        mode: 0755
+
+    - name: Reload profile.d scripts
+      become: true
+      shell: source /etc/profile.d/maven.sh

@@ -1,0 +1,22 @@
+---
+- name: Install Trivy
+  hosts: all
+  become: true
+  tasks:
+    - name: Download Trivy binary
+      get_url:
+        url: "https://github.com/aquasecurity/trivy/releases/download/v0.18.3/trivy_0.18.3_Linux-64bit.tar.gz"
+        dest: "/tmp/trivy_0.18.3_Linux-64bit.tar.gz"
+
+    - name: Extract Trivy binary
+      ansible.builtin.unarchive:
+        src: "/tmp/trivy_0.18.3_Linux-64bit.tar.gz"
+        dest: "/usr/local/bin"
+        remote_src: true
+        creates: "/usr/local/bin/trivy"
+
+    - name: Set permissions for Trivy binary
+      ansible.builtin.file:
+        path: "/usr/local/bin/trivy"
+        mode: "u+x,g+x"
+

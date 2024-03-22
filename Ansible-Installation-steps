@@ -1,0 +1,26 @@
+########################### Installation of Ansible on Windows Operating System ##########################
+
+Anisble Installation steps:
+
+
+1) sudo yum install python3-pip -y
+
+2) python3 --version 
+
+3) pip --version 
+
+4) pip install ansible 
+
+
+
+####### To create a Folder on the Tareget Server ###########
+
+ansible -i inventory all -m "shell" -a "touch devops"
+
+
+
+######### The command to Run a Ansible playbook ############## 
+
+
+ansible-playbook -i inventory.ini playbook.yaml
+

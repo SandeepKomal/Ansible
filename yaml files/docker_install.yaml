@@ -1,0 +1,70 @@
+---
+- name: Setup Docker on target servers
+  hosts: all
+  become: true
+  tasks:
+    - name: Update yum packages
+      yum:
+        name: '*'
+        state: latest
+      become: true
+      tags:
+        - update_packages
+
+    - name: Install Docker
+      yum:
+        name: docker
+        state: present
+      become: true
+      tags:
+        - install_docker
+
+    - name: Start Docker service
+      service:
+        name: docker
+        state: started
+      become: true
+      tags:
+        - start_docker
+
+    - name: Enable Docker service
+      systemd:
+        name: docker
+        enabled: yes
+      become: true
+      tags:
+        - enable_docker
+
+    - name: Add user to Docker group
+      user:
+        name: ec2-user
+        groups: docker
+        append: yes
+      become: true
+      tags:
+        - add_user_to_docker_group
+
+    - name: Set Docker socket permissions
+      file:
+        path: /var/run/docker.sock
+        owner: root
+        group: docker
+        mode: '0660'
+      become: true
+      tags:
+        - set_docker_socket_permissions
+
+    - name: Check Docker service status
+      service:
+        name: docker
+        state: started
+      become: true
+      register: docker_status
+      tags:
+        - check_docker_status
+
+    - name: Print Docker service status
+      debug:
+        msg: "Docker service status is {{ docker_status }}"
+      tags:
+        - debug_docker_status

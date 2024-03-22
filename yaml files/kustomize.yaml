@@ -1,0 +1,19 @@
+---
+- name: Install and configure kustomize
+  hosts: all
+  become: true
+  tasks:
+    - name: Download kustomize binary
+      ansible.builtin.get_url:
+        url: "https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize/v3.2.3/kustomize_kustomize.v3.2.3_linux_amd64"
+        dest: "/tmp/kustomize_kustomize.v3.2.3_linux_amd64"
+
+    - name: Make kustomize executable
+      ansible.builtin.file:
+        path: "/tmp/kustomize_kustomize.v3.2.3_linux_amd64"
+        mode: 'u+x'
+
+    - name: Move kustomize to bin directory
+      ansible.builtin.command:
+        cmd: "sudo mv /tmp/kustomize_kustomize.v3.2.3_linux_amd64 /usr/local/bin/kustomize"
+        creates: "/usr/local/bin/kustomize"
