@@ -1,0 +1,216 @@
+---
+- name: Install Tools
+  hosts: all
+  become: true
+  tasks:
+    - name: Install Git
+      yum:
+        name: git
+        state: present
+      tags: install_git
+
+    - name: Install Java 17 with Amazon Corretto
+      yum:
+        name: java-17-amazon-corretto-headless
+        state: present
+      tags: install_java
+
+    - name: Check Java version
+      command: java --version
+      register: java_version_output
+
+    - debug:
+        var: java_version_output.stdout_lines
+
+    - name: Install Docker
+      yum:
+        name: docker
+        state: present
+      become: true
+      tags:
+        - install_docker
+
+    - name: Start Docker service
+      service:
+        name: docker
+        state: started
+      become: true
+      tags:
+        - start_docker
+
+    - name: Enable Docker service
+      systemd:
+        name: docker
+        enabled: yes
+      become: true
+      tags:
+        - enable_docker
+
+    - name: Add user to Docker group
+      user:
+        name: ec2-user
+        groups: docker
+        append: yes
+      become: true
+      tags:
+        - add_user_to_docker_group
+
+    - name: Set Docker socket permissions
+      file:
+        path: /var/run/docker.sock
+        owner: root
+        group: docker
+        mode: '0660'
+      become: true
+      tags:
+        - set_docker_socket_permissions
+
+    - name: Check Docker service status
+      service:
+        name: docker
+        state: started
+      become: true
+      register: docker_status
+      tags:
+        - check_docker_status
+
+    - name: Print Docker service status
+      debug:
+        msg: "Docker service status is {{ docker_status }}"
+      tags:
+        - debug_docker_status
+
+    - name: Download kustomize binary
+      get_url:
+        url: "https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize/v3.2.3/kustomize_kustomize.v3.2.3_linux_amd64"
+        dest: "/tmp/kustomize_kustomize.v3.2.3_linux_amd64"
+      tags: download_kustomize
+
+    - name: Make kustomize executable
+      file:
+        path: "/tmp/kustomize_kustomize.v3.2.3_linux_amd64"
+        mode: 'u+x'
+      tags: make_kustomize_executable
+
+    - name: Move kustomize to bin directory
+      command:
+        cmd: "sudo mv /tmp/kustomize_kustomize.v3.2.3_linux_amd64 /usr/local/bin/kustomize"
+        creates: "/usr/local/bin/kustomize"
+      tags: move_kustomize_to_bin
+
+    - name: Download Trivy binary
+      get_url:
+        url: "https://github.com/aquasecurity/trivy/releases/download/v0.18.3/trivy_0.18.3_Linux-64bit.tar.gz"
+        dest: "/tmp/trivy_0.18.3_Linux-64bit.tar.gz"
+      tags: download_trivy
+
+    - name: Extract Trivy binary
+      ansible.builtin.unarchive:
+        src: "/tmp/trivy_0.18.3_Linux-64bit.tar.gz"
+        dest: "/usr/local/bin"
+        remote_src: true
+        creates: "/usr/local/bin/trivy"
+      tags: extract_trivy
+
+    - name: Set permissions for Trivy binary
+      file:
+        path: "/usr/local/bin/trivy"
+        mode: "u+x,g+x"
+      tags: set_trivy_permissions
+
+    - name: Change directory to /tmp
+      command: cd /tmp
+
+    - name: Download Apache Maven
+      get_url:
+        url: "https://dlcdn.apache.org/maven/maven-3/3.9.4/binaries/apache-maven-3.9.4-bin.tar.gz"
+        dest: /tmp/apache-maven-3.9.4-bin.tar.gz
+
+    - name: Extract Apache Maven
+      become: true
+      unarchive:
+        src: /tmp/apache-maven-3.9.4-bin.tar.gz
+        dest: /opt
+        remote_src: yes
+
+    - name: Create symbolic link for Apache Maven
+      become: true
+      file:
+        src: "/opt/apache-maven-3.9.4"
+        dest: "/opt/maven"
+        state: link
+
+    - name: Create maven.sh file
+      become: true
+      template:
+        src: maven.sh.j2
+        dest: /etc/profile.d/maven.sh
+        mode: 0755
+
+    - name: Reload profile.d scripts
+      become: true
+      shell: source /etc/profile.d/maven.sh
+
+    - name: Download AWS CLI v2 package
+      ansible.builtin.get_url:
+        url: "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip"
+        dest: "/tmp/awscliv2.zip"
+
+    - name: Unzip AWS CLI v2 package
+      ansible.builtin.unarchive:
+        src: "/tmp/awscliv2.zip"
+        dest: "/tmp"
+        remote_src: true
+
+    - name: Run AWS CLI v2 installer
+      ansible.builtin.command: >
+        sudo /tmp/aws/install
+      args:
+        creates: /usr/local/bin/aws
+
+    - name: Check AWS CLI version
+      ansible.builtin.command: "aws --version"
+      register: aws_cli_version
+      changed_when: false
+
+    - name: Print AWS CLI version
+      ansible.builtin.debug:
+        msg: "AWS CLI version: {{ aws_cli_version.stdout }}"
+
+    - name: Download kubectl binary
+      get_url:
+        url: "https://s3.us-west-2.amazonaws.com/amazon-eks/1.23.7/2022-06-29/bin/linux/amd64/kubectl"
+        dest: "/tmp/kubectl"
+
+    - name: Make kubectl executable
+      file:
+        path: "/tmp/kubectl"
+        mode: "u+x"
+
+    - name: Create directory for kubectl
+      file:
+        path: "{{ lookup('env', 'HOME') }}/bin"
+        state: directory
+
+    - name: Move kubectl binary to bin directory
+      copy:
+        src: "/tmp/kubectl"
+        dest: "{{ lookup('env', 'HOME') }}/bin/kubectl"
+        mode: "u+x"
+        remote_src: yes  
+
+    - name: Add kubectl to PATH
+      lineinfile:
+        dest: "{{ lookup('env', 'HOME') }}/.bashrc"
+        line: "export PATH=$PATH:{{ lookup('env', 'HOME') }}/bin"
+        create: yes
+
+    - name: Update PATH for current session
+      shell: "export PATH=$PATH:{{ lookup('env', 'HOME') }}/bin"
+
+- name: Check kubectl version
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Display kubectl version
+      command: "kubectl version --short --client"
