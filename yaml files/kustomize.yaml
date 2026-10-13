@@ -1,10 +1,10 @@
 ---
-# Pinned to Kustomize v5.8.2. Verify release assets/checksums before production use.
+# Pinned to Kustomize v5.8.3. Verify release assets/checksums before production use.
 - name: Install Kustomize
   hosts: all
   become: true
   vars:
-    kustomize_version: "5.8.2"
+    kustomize_version: "5.8.3"
     kustomize_release_base: "https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize/v{{ kustomize_version }}/"
     kustomize_asset: "kustomize_v{{ kustomize_version }}_linux_amd64.tar.gz"
     kustomize_archive: "/tmp/kustomize_v{{ kustomize_version }}_linux_amd64.tar.gz"
