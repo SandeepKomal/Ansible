@@ -1,11 +1,11 @@
 ---
-# Install Maven using an explicitly pinned version. Review release availability
-# and checksums at the Apache Maven project before upgrading this version.
+# Pinned to Maven 3.10.0. Review the official release notes and checksums before
+# changing the version or using this installer in a production environment.
 - name: Install and configure Apache Maven
   hosts: all
   become: true
   vars:
-    maven_version: "3.9.11"
+    maven_version: "3.10.0"
     maven_archive: "/tmp/apache-maven-{{ maven_version }}-bin.tar.gz"
     maven_install_dir: "/opt/apache-maven-{{ maven_version }}"
   tasks:
