@@ -1,0 +1,25 @@
+# Local inventory and environment-specific configuration
+inventory/hosts.ini
+inventory/hosts.yml
+inventory/group_vars/**/vault.yml
+!inventory/group_vars/**/vault.yml.example
+
+# Python / Ansible
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.ansible/
+.cache/
+.retry
+
+# Ansible Vault password files (never commit a real vault password)
+.vault-pass
+.vault-password
+vault-password.txt
+
+# Editor / OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
