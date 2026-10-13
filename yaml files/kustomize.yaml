@@ -1,19 +1,22 @@
 ---
-- name: Install and configure kustomize
+# Pin the version intentionally and verify publisher checksums before use.
+# This example preserves the upstream Linux AMD64 release naming convention.
+- name: Install Kustomize
   hosts: all
   become: true
+  vars:
+    kustomize_version: "5.7.1"
+    kustomize_archive: "/tmp/kustomize_v{{ kustomize_version }}_linux_amd64.tar.gz"
   tasks:
-    - name: Download kustomize binary
+    - name: Download Kustomize release archive
       ansible.builtin.get_url:
-        url: "https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize/v3.2.3/kustomize_kustomize.v3.2.3_linux_amd64"
-        dest: "/tmp/kustomize_kustomize.v3.2.3_linux_amd64"
+        url: "https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize/v{{ kustomize_version }}/kustomize_v{{ kustomize_version }}_linux_amd64.tar.gz"
+        dest: "{{ kustomize_archive }}"
+        mode: "0644"
 
-    - name: Make kustomize executable
-      ansible.builtin.file:
-        path: "/tmp/kustomize_kustomize.v3.2.3_linux_amd64"
-        mode: 'u+x'
-
-    - name: Move kustomize to bin directory
-      ansible.builtin.command:
-        cmd: "sudo mv /tmp/kustomize_kustomize.v3.2.3_linux_amd64 /usr/local/bin/kustomize"
-        creates: "/usr/local/bin/kustomize"
+    - name: Extract Kustomize
+      ansible.builtin.unarchive:
+        src: "{{ kustomize_archive }}"
+        dest: /usr/local/bin
+        remote_src: true
+        creates: /usr/local/bin/kustomize
