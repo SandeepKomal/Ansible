@@ -1,18 +1,22 @@
 ---
-- name: Install Java 17 with Amazon Corretto and check version
+# Amazon Corretto package name; adapt for other Linux distributions.
+- name: Install Java 17 using Amazon Corretto
   hosts: all
   become: true
   tasks:
-    - name: Install Java 17 with Amazon Corretto
-      yum:
+    - name: Ensure Java 17 is installed
+      ansible.builtin.package:
         name: java-17-amazon-corretto-headless
         state: present
 
     - name: Check Java version
-      command: java --version
+      ansible.builtin.command:
+        argv:
+          - java
+          - --version
       register: java_version_output
+      changed_when: false
 
-    - debug:
+    - name: Display Java version
+      ansible.builtin.debug:
         var: java_version_output.stdout_lines
-
-
