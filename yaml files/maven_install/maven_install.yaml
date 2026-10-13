@@ -1,37 +1,45 @@
 ---
+# Install Maven using an explicitly pinned version. Review release availability
+# and checksums at the Apache Maven project before upgrading this version.
 - name: Install and configure Apache Maven
   hosts: all
   become: true
+  vars:
+    maven_version: "3.9.11"
+    maven_archive: "/tmp/apache-maven-{{ maven_version }}-bin.tar.gz"
+    maven_install_dir: "/opt/apache-maven-{{ maven_version }}"
   tasks:
-    - name: Change directory to /tmp
-      command: cd /tmp
+    - name: Ensure Java is available
+      ansible.builtin.command:
+        argv:
+          - java
+          - --version
+      changed_when: false
 
-    - name: Download Apache Maven
-      get_url:
-        url: "https://dlcdn.apache.org/maven/maven-3/3.9.4/binaries/apache-maven-3.9.4-bin.tar.gz"
-        dest: /tmp/apache-maven-3.9.4-bin.tar.gz
+    - name: Download Apache Maven archive
+      ansible.builtin.get_url:
+        url: "https://dlcdn.apache.org/maven/maven-3/{{ maven_version }}/binaries/apache-maven-{{ maven_version }}-bin.tar.gz"
+        dest: "{{ maven_archive }}"
+        mode: "0644"
 
     - name: Extract Apache Maven
-      become: true
-      unarchive:
-        src: /tmp/apache-maven-3.9.4-bin.tar.gz
+      ansible.builtin.unarchive:
+        src: "{{ maven_archive }}"
         dest: /opt
-        remote_src: yes
+        remote_src: true
+        creates: "{{ maven_install_dir }}"
 
-    - name: Create symbolic link for Apache Maven
-      become: true
-      file:
-        src: "/opt/apache-maven-3.9.4"
-        dest: "/opt/maven"
+    - name: Point the stable Maven symlink to the selected version
+      ansible.builtin.file:
+        src: "{{ maven_install_dir }}"
+        dest: /opt/maven
         state: link
+        force: true
 
-    - name: Create maven.sh file
-      become: true
-      template:
+    - name: Configure Maven environment
+      ansible.builtin.template:
         src: maven.sh.j2
         dest: /etc/profile.d/maven.sh
-        mode: 0755
-
-    - name: Reload profile.d scripts
-      become: true
-      shell: source /etc/profile.d/maven.sh
+        owner: root
+        group: root
+        mode: "0644"
