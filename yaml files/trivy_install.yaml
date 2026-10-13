@@ -1,11 +1,11 @@
 ---
-# Pinned to Trivy v0.74.0. For production use, verify release checksums/signatures
+# Pinned to Trivy v0.75.0. For production use, verify release checksums/signatures
 # and consider Aqua's documented package/repository installation options.
 - name: Install Trivy from a Linux AMD64 archive
   hosts: all
   become: true
   vars:
-    trivy_version: "0.74.0"
+    trivy_version: "0.75.0"
     trivy_archive: "/tmp/trivy_{{ trivy_version }}_Linux-64bit.tar.gz"
     trivy_extract_dir: "/tmp/trivy-v{{ trivy_version }}"
   tasks:
