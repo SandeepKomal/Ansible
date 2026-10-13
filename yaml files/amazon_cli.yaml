@@ -1,30 +1,39 @@
 ---
+# Example for Linux x86_64 managed hosts. Confirm architecture and vendor
+# instructions before adapting this playbook for ARM64 or other platforms.
 - name: Install AWS CLI v2
   hosts: all
   become: true
   tasks:
-    - name: Download AWS CLI v2 package
+    - name: Download AWS CLI v2 archive
       ansible.builtin.get_url:
-        url: "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip"
-        dest: "/tmp/awscliv2.zip"
+        url: https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip
+        dest: /tmp/awscliv2.zip
+        mode: "0644"
 
-    - name: Unzip AWS CLI v2 package
+    - name: Extract AWS CLI v2 archive
       ansible.builtin.unarchive:
-        src: "/tmp/awscliv2.zip"
-        dest: "/tmp"
+        src: /tmp/awscliv2.zip
+        dest: /tmp
         remote_src: true
+        creates: /tmp/aws/install
 
-    - name: Run AWS CLI v2 installer
-      ansible.builtin.command: >
-        sudo /tmp/aws/install
+    - name: Install AWS CLI v2
+      ansible.builtin.command:
+        argv:
+          - /tmp/aws/install
+          - --update
       args:
         creates: /usr/local/bin/aws
 
-    - name: Check AWS CLI version
-      ansible.builtin.command: "aws --version"
+    - name: Read AWS CLI version
+      ansible.builtin.command:
+        argv:
+          - /usr/local/bin/aws
+          - --version
       register: aws_cli_version
       changed_when: false
 
-    - name: Print AWS CLI version
+    - name: Display AWS CLI version
       ansible.builtin.debug:
-        msg: "AWS CLI version: {{ aws_cli_version.stdout }}"
+        msg: "{{ aws_cli_version.stdout }}"
