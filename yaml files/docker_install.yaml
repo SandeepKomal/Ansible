@@ -22,22 +22,5 @@
         - start_docker
         - enable_docker
 
-    - name: Check Docker service state
-      ansible.builtin.command:
-        argv:
-          - systemctl
-          - is-active
-          - docker
-      register: docker_service_status
-      changed_when: false
-      tags:
-        - verify
-
-    - name: Display Docker service state
-      ansible.builtin.debug:
-        msg: "Docker service is {{ docker_service_status.stdout }}"
-      tags:
-        - verify
-
 # Security note: membership in the docker group can grant root-equivalent
 # control. Add users to that group only after reviewing your security policy.
