@@ -5,12 +5,14 @@
   become: true
   vars:
     kustomize_version: "5.8.2"
+    kustomize_release_base: "https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize/v{{ kustomize_version }}/"
+    kustomize_asset: "kustomize_v{{ kustomize_version }}_linux_amd64.tar.gz"
     kustomize_archive: "/tmp/kustomize_v{{ kustomize_version }}_linux_amd64.tar.gz"
     kustomize_extract_dir: "/tmp/kustomize-v{{ kustomize_version }}"
   tasks:
     - name: Download Kustomize release archive
       ansible.builtin.get_url:
-        url: "https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize/v{{ kustomize_version }}/kustomize_v{{ kustomize_version }}_linux_amd64.tar.gz"
+        url: "{{ kustomize_release_base }}{{ kustomize_asset }}"
         dest: "{{ kustomize_archive }}"
         mode: "0644"
 
