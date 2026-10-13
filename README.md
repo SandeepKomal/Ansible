@@ -5,6 +5,9 @@
 **Practical playbooks, installation guides, and infrastructure automation examples for DevOps engineers.**
 
 [![Ansible](https://img.shields.io/badge/Ansible-automation-EE0000?logo=ansible&logoColor=white)](https://www.ansible.com/)
+[![Validation](https://github.com/SandeepKomal/Ansible/actions/workflows/ansible-validation.yml/badge.svg)](https://github.com/SandeepKomal/Ansible/actions/workflows/ansible-validation.yml)
+[![GitHub stars](https://img.shields.io/github/stars/SandeepKomal/Ansible?style=social)](https://github.com/SandeepKomal/Ansible/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/SandeepKomal/Ansible?style=social)](https://github.com/SandeepKomal/Ansible/network/members)
 [![YAML](https://img.shields.io/badge/configuration-YAML-CB171E?logo=yaml&logoColor=white)](https://yaml.org/)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg)](CONTRIBUTING.md)
@@ -18,7 +21,7 @@ A hands-on collection of Ansible examples for configuring Linux hosts and instal
 ## What you’ll find
 
 - **Getting started:** install Ansible, define an inventory, verify SSH connectivity, and run your first playbook.
-- **Tool installation playbooks:** examples for Git, Java 17, Docker, AWS CLI, Kustomize, Trivy, Maven, and kubectl.
+- **Tool installation playbooks:** examples for Git, Java 17, Docker, AWS CLI, Kustomize, Trivy, and Maven.
 - **Reusable automation patterns:** privilege escalation, tags, templates, idempotent tasks, validation, and service management.
 - **Operational guidance:** linting, troubleshooting, secrets handling, and contribution instructions.
 
@@ -31,7 +34,7 @@ A hands-on collection of Ansible examples for configuring Linux hosts and instal
 | [inventory/](inventory/) | Safe example inventory; replace placeholders with your own hosts |
 | [ansible.cfg](ansible.cfg) | Project-local Ansible defaults |
 | [requirements.yml](requirements.yml) | Optional Ansible collection dependencies |
-| [yaml files/](yaml%20files/) | Original tool-installation examples retained for compatibility |
+| [yaml files/](yaml%20files/) | Tool-installation examples retained for compatibility |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | How to contribute |
 | [SECURITY.md](SECURITY.md) | Responsible security reporting |
 
