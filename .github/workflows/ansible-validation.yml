@@ -28,8 +28,14 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install ansible ansible-lint
 
-      - name: Check starter playbook syntax
-        run: ansible-playbook -i localhost, -c local playbooks/hello.yml --syntax-check
+      - name: Syntax-check all example playbooks
+        shell: bash
+        run: |
+          set -euo pipefail
+          while IFS= read -r -d '' file; do
+            echo "Checking: $file"
+            ansible-playbook -i localhost, -c local "$file" --syntax-check
+          done < <(find playbooks "yaml files" -type f \( -name '*.yml' -o -name '*.yaml' \) -print0)
 
-      - name: Lint maintained playbooks
-        run: ansible-lint playbooks/
+      - name: Lint playbooks
+        run: ansible-lint playbooks/ "yaml files/"

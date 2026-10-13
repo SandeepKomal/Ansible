@@ -1,0 +1,38 @@
+name: Bug report
+description: Report a reproducible issue in a playbook or guide
+title: "[Bug]: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: "Please do not include private IPs, hostnames, credentials, tokens, or other sensitive infrastructure details."
+  - type: input
+    id: path
+    attributes:
+      label: Affected file
+      description: Which playbook or documentation page is affected?
+      placeholder: "yaml files/git_install.yaml"
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What happened?
+      description: Describe the observed behavior and expected behavior.
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Ansible version, Linux distribution/version, and relevant non-sensitive details.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction steps
+      description: Provide commands with secrets and sensitive host details removed.
+    validations:
+      required: true

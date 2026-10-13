@@ -1,19 +1,44 @@
 ---
-- name: Install and configure kustomize
+# Pinned to Kustomize v5.8.3. Verify release assets/checksums before production use.
+- name: Install Kustomize
   hosts: all
   become: true
+  vars:
+    kustomize_version: "5.8.3"
+    kustomize_release_base: "https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize/v{{ kustomize_version }}/"
+    kustomize_asset: "kustomize_v{{ kustomize_version }}_linux_amd64.tar.gz"
+    kustomize_archive: "/tmp/kustomize_v{{ kustomize_version }}_linux_amd64.tar.gz"
+    kustomize_extract_dir: "/tmp/kustomize-v{{ kustomize_version }}"
   tasks:
-    - name: Download kustomize binary
+    - name: Download Kustomize release archive
       ansible.builtin.get_url:
-        url: "https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize/v3.2.3/kustomize_kustomize.v3.2.3_linux_amd64"
-        dest: "/tmp/kustomize_kustomize.v3.2.3_linux_amd64"
+        url: "{{ kustomize_release_base }}{{ kustomize_asset }}"
+        dest: "{{ kustomize_archive }}"
+        mode: "0644"
 
-    - name: Make kustomize executable
+    - name: Create extraction directory
       ansible.builtin.file:
-        path: "/tmp/kustomize_kustomize.v3.2.3_linux_amd64"
-        mode: 'u+x'
+        path: "{{ kustomize_extract_dir }}"
+        state: directory
+        mode: "0755"
 
-    - name: Move kustomize to bin directory
-      ansible.builtin.command:
-        cmd: "sudo mv /tmp/kustomize_kustomize.v3.2.3_linux_amd64 /usr/local/bin/kustomize"
-        creates: "/usr/local/bin/kustomize"
+    - name: Extract Kustomize archive
+      ansible.builtin.unarchive:
+        src: "{{ kustomize_archive }}"
+        dest: "{{ kustomize_extract_dir }}"
+        remote_src: true
+        creates: "{{ kustomize_extract_dir }}/kustomize"
+
+    - name: Install versioned Kustomize binary
+      ansible.builtin.copy:
+        src: "{{ kustomize_extract_dir }}/kustomize"
+        dest: "/usr/local/bin/kustomize-{{ kustomize_version }}"
+        remote_src: true
+        mode: "0755"
+
+    - name: Point Kustomize command to the selected version
+      ansible.builtin.file:
+        src: "/usr/local/bin/kustomize-{{ kustomize_version }}"
+        dest: /usr/local/bin/kustomize
+        state: link
+        force: true

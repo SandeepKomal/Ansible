@@ -3,8 +3,25 @@
   hosts: all
   become: true
   tasks:
-    - name: Install Git
-      yum:
+    - name: Ensure Git is installed
+      ansible.builtin.package:
         name: git
         state: present
-      tags: install_git
+      tags:
+        - install_git
+
+    - name: Verify Git installation
+      ansible.builtin.command:
+        argv:
+          - git
+          - --version
+      register: git_version
+      changed_when: false
+      tags:
+        - verify
+
+    - name: Display Git version
+      ansible.builtin.debug:
+        msg: "{{ git_version.stdout }}"
+      tags:
+        - verify
