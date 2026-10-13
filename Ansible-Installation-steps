@@ -1,26 +1,44 @@
-########################### Installation of Ansible  ##########################
+# Ansible Installation and First Commands
 
-Anisble Installation steps:
+> For the full guide, see [Ansible_installation.md](Ansible_installation.md) and [docs/GETTING_STARTED.md](docs/GETTING_STARTED.md).
 
+## Install Ansible on a control node
 
-1) sudo yum install python3-pip -y
+Use a supported method from the [official documentation](https://docs.ansible.com/projects/ansible/latest/installation_guide/index.html). Example using a virtual environment:
 
-2) python3 --version 
+```bash
+python3 --version
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install ansible ansible-lint
+ansible --version
+```
 
-3) pip --version 
+## Configure inventory and connectivity
 
-4) pip install ansible 
+```bash
+cp inventory/hosts.ini.example inventory/hosts.ini
+# Edit inventory/hosts.ini before running commands.
+ansible-inventory -i inventory/hosts.ini --graph
+ansible all -i inventory/hosts.ini -m ansible.builtin.ping
+```
 
+## Create a directory on target hosts
 
+Prefer the file module to an ad-hoc shell command because it declares the desired state and can be safely re-run:
 
-####### To create a Folder on the Tareget Server ###########
+```bash
+ansible all -i inventory/hosts.ini -m ansible.builtin.file \
+  -a "path=~/devops state=directory mode=0750"
+```
 
-ansible -i inventory all -m "shell" -a "touch devops"
+## Run a playbook
 
+```bash
+ansible-playbook -i inventory/hosts.ini playbooks/hello.yml --syntax-check
+ansible-playbook -i inventory/hosts.ini playbooks/hello.yml --check --diff
+ansible-playbook -i inventory/hosts.ini playbooks/hello.yml
+```
 
-
-######### The command to Run a Ansible playbook ############## 
-
-
-ansible-playbook -i inventory.ini playbook.yaml
-
+Check mode is best-effort; review the playbook and output before making changes. Only target systems you are authorized to administer.
