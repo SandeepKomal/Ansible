@@ -1,0 +1,21 @@
+---
+- name: Install Git on supported Linux hosts
+  hosts: all
+  become: true
+  tasks:
+    - name: Install Git package
+      ansible.builtin.package:
+        name: git
+        state: present
+      tags:
+        - install_git
+
+    - name: Verify Git installation
+      ansible.builtin.command:
+        argv:
+          - git
+          - --version
+      register: git_version
+      changed_when: false
+      tags:
+        - verify
