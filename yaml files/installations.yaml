@@ -2,10 +2,17 @@
 # Convenience entry point that composes the individual tool installers.
 # Review all imports and confirm OS compatibility before using this on a host.
 # Some tools are intended for x86_64 Linux; see each playbook's comments.
-- ansible.builtin.import_playbook: git_install.yaml
-- ansible.builtin.import_playbook: java17_install.yaml
-- ansible.builtin.import_playbook: docker_install.yaml
-- ansible.builtin.import_playbook: kustomize.yaml
-- ansible.builtin.import_playbook: trivy_install.yaml
-- ansible.builtin.import_playbook: maven_install/maven_install.yaml
-- ansible.builtin.import_playbook: amazon_cli.yaml
+- name: Import Git installer
+  ansible.builtin.import_playbook: git_install.yaml
+- name: Import Java 17 installer
+  ansible.builtin.import_playbook: java17_install.yaml
+- name: Import Docker installer
+  ansible.builtin.import_playbook: docker_install.yaml
+- name: Import Kustomize installer
+  ansible.builtin.import_playbook: kustomize.yaml
+- name: Import Trivy installer
+  ansible.builtin.import_playbook: trivy_install.yaml
+- name: Import Maven installer
+  ansible.builtin.import_playbook: maven_install/maven_install.yaml
+- name: Import AWS CLI installer
+  ansible.builtin.import_playbook: amazon_cli.yaml
