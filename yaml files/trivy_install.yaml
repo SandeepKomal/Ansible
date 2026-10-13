@@ -1,22 +1,36 @@
 ---
-- name: Install Trivy
+# For production use, prefer Aqua's documented package/repository installation
+# and verify the selected release and its checksum/signature.
+- name: Install Trivy from a pinned Linux AMD64 archive
   hosts: all
   become: true
+  vars:
+    trivy_version: "0.66.0"
+    trivy_archive: "/tmp/trivy_{{ trivy_version }}_Linux-64bit.tar.gz"
   tasks:
-    - name: Download Trivy binary
-      get_url:
-        url: "https://github.com/aquasecurity/trivy/releases/download/v0.18.3/trivy_0.18.3_Linux-64bit.tar.gz"
-        dest: "/tmp/trivy_0.18.3_Linux-64bit.tar.gz"
+    - name: Download Trivy archive
+      ansible.builtin.get_url:
+        url: "https://github.com/aquasecurity/trivy/releases/download/v{{ trivy_version }}/trivy_{{ trivy_version }}_Linux-64bit.tar.gz"
+        dest: "{{ trivy_archive }}"
+        mode: "0644"
 
     - name: Extract Trivy binary
       ansible.builtin.unarchive:
-        src: "/tmp/trivy_0.18.3_Linux-64bit.tar.gz"
-        dest: "/usr/local/bin"
+        src: "{{ trivy_archive }}"
+        dest: /usr/local/bin
         remote_src: true
-        creates: "/usr/local/bin/trivy"
+        include:
+          - trivy
+        creates: /usr/local/bin/trivy
 
-    - name: Set permissions for Trivy binary
-      ansible.builtin.file:
-        path: "/usr/local/bin/trivy"
-        mode: "u+x,g+x"
+    - name: Verify Trivy installation
+      ansible.builtin.command:
+        argv:
+          - /usr/local/bin/trivy
+          - --version
+      register: trivy_version_output
+      changed_when: false
 
+    - name: Display Trivy version
+      ansible.builtin.debug:
+        var: trivy_version_output.stdout
