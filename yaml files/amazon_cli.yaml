@@ -24,7 +24,7 @@
           - /tmp/aws/install
           - --update
       args:
-        creates: /usr/local/bin/aws
+        creates: /usr/local/aws-cli/v2/current/bin/aws
 
     - name: Read AWS CLI version
       ansible.builtin.command:
