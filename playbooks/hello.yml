@@ -1,0 +1,10 @@
+---
+- name: Create a safe first Ansible example
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Create an examples directory in the remote user's home
+      ansible.builtin.file:
+        path: "{{ ansible_env.HOME | default('~/') }}/ansible-demo"
+        state: directory
+        mode: "0750"

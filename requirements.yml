@@ -1,0 +1,7 @@
+---
+# Add only collections needed by playbooks in this repository.
+# Example:
+# collections:
+#   - name: amazon.aws
+#     version: "x.y.z"
+collections: []
