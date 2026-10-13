@@ -1,12 +1,12 @@
 ---
-# Pin the version intentionally and verify publisher checksums before use.
-# This example preserves the upstream Linux AMD64 release naming convention.
+# Pinned to Kustomize v5.8.2. Verify release assets/checksums before production use.
 - name: Install Kustomize
   hosts: all
   become: true
   vars:
-    kustomize_version: "5.7.1"
+    kustomize_version: "5.8.2"
     kustomize_archive: "/tmp/kustomize_v{{ kustomize_version }}_linux_amd64.tar.gz"
+    kustomize_extract_dir: "/tmp/kustomize-v{{ kustomize_version }}"
   tasks:
     - name: Download Kustomize release archive
       ansible.builtin.get_url:
@@ -14,9 +14,29 @@
         dest: "{{ kustomize_archive }}"
         mode: "0644"
 
-    - name: Extract Kustomize
+    - name: Create extraction directory
+      ansible.builtin.file:
+        path: "{{ kustomize_extract_dir }}"
+        state: directory
+        mode: "0755"
+
+    - name: Extract Kustomize archive
       ansible.builtin.unarchive:
         src: "{{ kustomize_archive }}"
-        dest: /usr/local/bin
+        dest: "{{ kustomize_extract_dir }}"
         remote_src: true
-        creates: /usr/local/bin/kustomize
+        creates: "{{ kustomize_extract_dir }}/kustomize"
+
+    - name: Install versioned Kustomize binary
+      ansible.builtin.copy:
+        src: "{{ kustomize_extract_dir }}/kustomize"
+        dest: "/usr/local/bin/kustomize-{{ kustomize_version }}"
+        remote_src: true
+        mode: "0755"
+
+    - name: Point Kustomize command to the selected version
+      ansible.builtin.file:
+        src: "/usr/local/bin/kustomize-{{ kustomize_version }}"
+        dest: /usr/local/bin/kustomize
+        state: link
+        force: true
