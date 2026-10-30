@@ -25,6 +25,18 @@ A hands-on collection of Ansible examples for configuring Linux hosts and instal
 - **Reusable automation patterns:** privilege escalation, tags, templates, idempotent tasks, validation, and service management.
 - **Operational guidance:** linting, troubleshooting, secrets handling, and contribution instructions.
 
+## Ansible Quest: learn in your browser
+
+The [Ansible Quest site](https://sandeepkomal.github.io/Ansible/) turns this repository into a free course:
+
+- **Playground:** 43 real incidents (UNREACHABLE hosts, missing sudo passwords, undefined variables, Vault, handlers that never fire, rolling updates that take every host down) on a simulated fleet, with real `ansible` and `ansible-playbook` output.
+- **Path:** 14 levels from the first ping to production, each with a lab that uses the playbooks in this repository.
+- **Playbook X-ray:** paste a playbook to get every line explained and risky patterns flagged.
+- **Troubleshoot:** paste an Ansible error to get its cause, how to confirm it, the fix and how to prevent it. A plain copy is in [site/problems.html](site/problems.html).
+- **Quiz, cheat sheet and architecture** pages.
+
+It is static HTML with no trackers or third-party requests; progress stays in your browser. To run it locally, serve the `site` folder (for example `python3 -m http.server -d site`) and run the tests with `node tests/check_playground.js` and the other files in `tests/`. After changing the troubleshooting data, regenerate the static page with `node tools/build_problems.js`.
+
 ## Repository map
 
 | Path | Purpose |
@@ -35,6 +47,9 @@ A hands-on collection of Ansible examples for configuring Linux hosts and instal
 | [ansible.cfg](ansible.cfg) | Project-local Ansible defaults |
 | [requirements.yml](requirements.yml) | Optional Ansible collection dependencies |
 | [yaml files/](yaml%20files/) | Tool-installation examples retained for compatibility |
+| [site/](site/) | The Ansible Quest learning site (GitHub Pages) |
+| [tests/](tests/) | Tests for the site: playground scenarios, fuzzer, X-ray, data |
+| [tools/](tools/) | Generates site/problems.html from the troubleshooting data |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | How to contribute |
 | [SECURITY.md](SECURITY.md) | Responsible security reporting |
 
