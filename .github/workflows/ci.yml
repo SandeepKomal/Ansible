@@ -1,0 +1,34 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  site:
+    name: Site tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: 24
+
+      - name: Scripts parse
+        run: for f in site/*.js tools/*.js tests/*.js; do node --check "$f"; done
+
+      - name: Playground scenarios, wrong moves and the cheat sheet
+        run: node tests/check_playground.js
+
+      - name: Fuzz the playground
+        run: node tests/fuzz_playground.js 20000
+
+      - name: Playbook X-ray
+        run: node tests/check_xray.js
+
+      - name: Site data and problems.html in sync
+        run: node tests/check_site_data.js

@@ -1,0 +1,978 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'; base-uri 'none'; form-action 'none'">
+  <meta name="description" content="Every common Ansible error with the exact message, its cause, how to confirm it, the fix and how to prevent it: UNREACHABLE, Missing sudo password, undefined variables, YAML errors, Vault, handlers and more.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Ansible errors and how to fix them">
+  <meta property="og:description" content="54 Ansible errors explained: exact message, cause, confirm, fix, prevent.">
+  <meta property="og:url" content="https://sandeepkomal.github.io/Ansible/problems.html">
+  <link rel="canonical" href="https://sandeepkomal.github.io/Ansible/problems.html">
+  <title>Ansible errors and fixes</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="logo.svg" type="image/svg+xml">
+</head>
+<body class="static-page">
+  <header class="top">
+    <div class="wrap top-inner">
+      <a class="brand" href="index.html"><img src="logo.svg" alt="" width="22" height="22"> Ansible Quest</a>
+      <nav aria-label="Sections"><a href="index.html#path">Path</a><a href="index.html#doctor">Troubleshoot</a><a href="index.html#cheats">Cheat sheet</a></nav>
+    </div>
+  </header>
+  <main class="wrap">
+    <h1>Ansible errors and how to fix them</h1>
+    <p class="lede">54 errors and symptoms Ansible users meet, each with the exact message, why it happens, how to confirm the cause, the fix, how to prevent it, and a scenario to practise it in the browser. Generated from the same data as the <a href="index.html#doctor">interactive reference</a>.</p>
+    <nav aria-label="Contents">
+      <h3>Connection and access</h3>
+      <ul class="toc">
+        <li><a href="#unreachable-publickey">UNREACHABLE: Permission denied (publickey)</a></li>
+        <li><a href="#unreachable-timeout">UNREACHABLE: Connection timed out</a></li>
+        <li><a href="#host-key-changed">REMOTE HOST IDENTIFICATION HAS CHANGED</a></li>
+        <li><a href="#host-key-verification-failed">Host key verification failed (new host)</a></li>
+        <li><a href="#could-not-resolve-hostname">Could not resolve hostname</a></li>
+        <li><a href="#missing-sudo-password">Missing sudo password</a></li>
+        <li><a href="#incorrect-sudo-password">Incorrect sudo password</a></li>
+        <li><a href="#unprivileged-become">Failed to set permissions on the temporary files</a></li>
+        <li><a href="#sudo-parse-error">MODULE FAILURE: sudo parse error in /etc/sudoers.d</a></li>
+      </ul>
+      <h3>Hosts, limits and tags</h3>
+      <ul class="toc">
+        <li><a href="#no-hosts-matched">Could not match supplied host pattern / skipping: no hosts matched</a></li>
+        <li><a href="#limit-no-hosts">--limit leaves us with no hosts to target</a></li>
+        <li><a href="#inventory-not-parsed">Unable to parse ... as an inventory source</a></li>
+        <li><a href="#tags-skipped-task">A task did not run with --tags</a></li>
+      </ul>
+      <h3>YAML and parsing</h3>
+      <ul class="toc">
+        <li><a href="#yaml-mapping-values">mapping values are not allowed in this context</a></li>
+        <li><a href="#yaml-unhashable-key">found unacceptable key (unhashable type: 'AnsibleMapping')</a></li>
+        <li><a href="#yaml-expected-key">did not find expected key</a></li>
+        <li><a href="#yaml-tab">found character that cannot start any token</a></li>
+        <li><a href="#not-valid-attribute">'x' is not a valid attribute for a Play</a></li>
+        <li><a href="#conflicting-action">conflicting action statements</a></li>
+        <li><a href="#no-module-detected">no module/action detected in task</a></li>
+      </ul>
+      <h3>Modules and tasks</h3>
+      <ul class="toc">
+        <li><a href="#couldnt-resolve-module">couldn't resolve module/action</a></li>
+        <li><a href="#unsupported-parameters">Unsupported parameters for module</a></li>
+        <li><a href="#module-failure-python">MODULE FAILURE / python3: not found</a></li>
+        <li><a href="#no-package-matching">No package matching ... is available</a></li>
+        <li><a href="#apt-lock">Failed to lock apt for exclusive operation</a></li>
+        <li><a href="#service-not-found">Could not find the requested service</a></li>
+        <li><a href="#service-start-failed">Unable to start service: Job for x.service failed</a></li>
+        <li><a href="#health-check-failed">uri: Status code was ... and not [200]</a></li>
+        <li><a href="#errno-2">[Errno 2] No such file or directory</a></li>
+        <li><a href="#destination-not-writable">Destination ... not writable / does not exist</a></li>
+        <li><a href="#non-zero-return-code">non-zero return code</a></li>
+      </ul>
+      <h3>Variables and templates</h3>
+      <ul class="toc">
+        <li><a href="#undefined-variable">The task includes an option with an undefined variable</a></li>
+        <li><a href="#dict-no-attribute">'dict object' has no attribute</a></li>
+        <li><a href="#hostvars-no-attribute">HostVarsVars object has no attribute 'ansible_default_ipv4'</a></li>
+        <li><a href="#invalid-loop-data">Invalid data passed to 'loop', it requires a list</a></li>
+        <li><a href="#conditional-failed">The conditional check ... failed</a></li>
+        <li><a href="#when-always-true">when runs although the variable is false</a></li>
+        <li><a href="#wrong-variable-value">A variable has the wrong value on some hosts</a></li>
+        <li><a href="#template-literal-braces">Config file contains literal {{ }}</a></li>
+      </ul>
+      <h3>Handlers and idempotency</h3>
+      <ul class="toc">
+        <li><a href="#handler-not-found">The requested handler was not found</a></li>
+        <li><a href="#handler-did-not-run">Handler did not run: service still uses old config</a></li>
+        <li><a href="#always-changed">Task reports changed on every run</a></li>
+        <li><a href="#check-mode-skipped">Check mode skips command and shell tasks</a></li>
+      </ul>
+      <h3>Vault and secrets</h3>
+      <ul class="toc">
+        <li><a href="#no-vault-secrets">Attempting to decrypt but no vault secrets found</a></li>
+        <li><a href="#decryption-failed">Decryption failed (no vault secrets were found that could decrypt)</a></li>
+        <li><a href="#not-vault-encrypted">input is not vault encrypted data</a></li>
+        <li><a href="#secret-in-output">Secret visible in task output or CI logs</a></li>
+      </ul>
+      <h3>Roles, collections and upgrades</h3>
+      <ul class="toc">
+        <li><a href="#role-not-found">the role ... was not found</a></li>
+        <li><a href="#include-removed">ansible.builtin.include has been removed</a></li>
+        <li><a href="#galaxy-dependencies">Failed to resolve the requested dependencies map</a></li>
+      </ul>
+      <h3>Scale and reliability</h3>
+      <ul class="toc">
+        <li><a href="#slow-run">Runs take too long on many hosts</a></li>
+        <li><a href="#worker-dead">A worker was found in a dead state</a></li>
+        <li><a href="#broken-pipe">UNREACHABLE: client_loop: send disconnect: Broken pipe</a></li>
+        <li><a href="#all-hosts-down">A deploy took every host down at once</a></li>
+      </ul>
+    </nav>
+    <article class="card answer" id="unreachable-publickey">
+      <h2>UNREACHABLE: Permission denied (publickey)</h2>
+      <p>One or more hosts are UNREACHABLE; the message names a user@address.</p>
+      <h4>Error</h4>
+      <pre><code>fatal: [web-04]: UNREACHABLE! =&gt; {&quot;changed&quot;: false, &quot;msg&quot;: &quot;Failed to connect to the host via ssh: root@10.0.1.14: Permission denied (publickey).&quot;, &quot;unreachable&quot;: true}</code></pre>
+      <h4>Why it happens</h4>
+      <ul><li>ansible_user is wrong for that host (check the user in the message)</li><li>The private key Ansible offers is not in the user's authorized_keys</li><li>An inventory variable overrides -u: inventory beats the command line</li><li>The key file path in ansible_ssh_private_key_file does not exist</li></ul>
+      <h4>Confirm the cause</h4>
+      <pre><code>ansible-inventory --host &lt;host&gt;   # which ansible_user and key
+ssh -i ~/.ssh/&lt;key&gt; &lt;user&gt;@&lt;address&gt;   # does plain SSH work?
+ansible &lt;host&gt; -m ping -vvvv   # the exact ssh command</code></pre>
+      <h4>Fix</h4>
+      <ol><li>Correct ansible_user or the key in the inventory, group_vars or host_vars</li><li>Install the public key for that user on the host</li></ol>
+      <h4>Prevent it</h4>
+      <ul><li>Set ansible_user once in group_vars/all; avoid per-host overrides</li><li>Bake the deploy user and key into your base image</li></ul>
+      <p class="practise">Practise it: <a href="index.html#play/publickey">Permission denied (publickey)</a> · <a href="index.html#fix/unreachable-publickey">Interactive version</a></p>
+    </article>
+    <article class="card answer" id="unreachable-timeout">
+      <h2>UNREACHABLE: Connection timed out</h2>
+      <p>A host takes a long time and then fails with Connection timed out.</p>
+      <h4>Error</h4>
+      <pre><code>fatal: [db-02]: UNREACHABLE! =&gt; {&quot;changed&quot;: false, &quot;msg&quot;: &quot;Failed to connect to the host via ssh: ssh: connect to host 10.0.2.21 port 22: Connection timed out&quot;, &quot;unreachable&quot;: true}</code></pre>
+      <h4>Why it happens</h4>
+      <ul><li>Wrong ansible_host address (a typo or an old IP)</li><li>A firewall or security group blocks port 22 from the control node</li><li>The host is down or has no route</li><li>SSH listens on another port (ansible_port)</li></ul>
+      <h4>Confirm the cause</h4>
+      <pre><code>ansible-inventory --host &lt;host&gt;
+nc -vz &lt;address&gt; 22
+ssh -v &lt;user&gt;@&lt;address&gt;</code></pre>
+      <h4>Fix</h4>
+      <ol><li>Correct ansible_host or ansible_port</li><li>Open port 22 from the control node's address</li></ol>
+      <h4>Prevent it</h4>
+      <ul><li>Use a dynamic inventory plugin for cloud hosts so addresses never go stale</li></ul>
+      <p class="practise">Practise it: <a href="index.html#play/timeout">Connection timed out</a> · <a href="index.html#fix/unreachable-timeout">Interactive version</a></p>
+    </article>
+    <article class="card answer" id="host-key-changed">
+      <h2>REMOTE HOST IDENTIFICATION HAS CHANGED</h2>
+      <p>A host that worked yesterday is UNREACHABLE with a long warning about its identification.</p>
+      <h4>Error</h4>
+      <pre><code>fatal: [web-03]: UNREACHABLE! =&gt; {&quot;changed&quot;: false, &quot;msg&quot;: &quot;Failed to connect to the host via ssh: @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\r\n@    WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED!     @\r\n... Host key verification failed.&quot;, &quot;unreachable&quot;: true}</code></pre>
+      <h4>Why it happens</h4>
+      <ul><li>The host was rebuilt or reinstalled and has a new SSH host key</li><li>A different machine now has that address</li><li>Someone is intercepting the connection</li></ul>
+      <h4>Confirm the cause</h4>
+      <pre><code>grep &lt;address&gt; ~/.ssh/known_hosts
+ssh-keyscan &lt;address&gt;   # compare with the console's fingerprint</code></pre>
+      <h4>Fix</h4>
+      <ol><li>After confirming the rebuild: ssh-keygen -R &lt;address&gt;, then ssh-keyscan &lt;address&gt; &gt;&gt; ~/.ssh/known_hosts</li></ol>
+      <h4>Prevent it</h4>
+      <ul><li>Do not set host_key_checking = False: it removes protection for every host</li><li>Publish host keys from your image pipeline, or use SSH certificates</li></ul>
+      <p class="practise">Practise it: <a href="index.html#play/hostkey">Host key changed after a rebuild</a> · <a href="index.html#fix/host-key-changed">Interactive version</a></p>
+    </article>
+    <article class="card answer" id="host-key-verification-failed">
+      <h2>Host key verification failed (new host)</h2>
+      <p>A new host, or a fresh CI runner, cannot connect; SSH has never seen the host's key.</p>
+      <h4>Error</h4>
+      <pre><code>fatal: [web-05]: UNREACHABLE! =&gt; {&quot;changed&quot;: false, &quot;msg&quot;: &quot;Failed to connect to the host via ssh: Host key verification failed.&quot;, &quot;unreachable&quot;: true}</code></pre>
+      <h4>Why it happens</h4>
+      <ul><li>The host is not in known_hosts and Ansible cannot answer SSH's yes/no prompt</li><li>A CI runner starts with an empty known_hosts</li></ul>
+      <h4>Confirm the cause</h4>
+      <pre><code>ssh-keygen -F &lt;address&gt;
+ssh &lt;user&gt;@&lt;address&gt;   # SSH asks to confirm the fingerprint</code></pre>
+      <h4>Fix</h4>
+      <ol><li>Add the key after checking its fingerprint: ssh-keyscan &lt;address&gt; &gt;&gt; ~/.ssh/known_hosts</li></ol>
+      <h4>Prevent it</h4>
+      <ul><li>In CI, write known_hosts from a stored, reviewed file instead of disabling checking</li></ul>
+      <p class="practise">Practise it: <a href="index.html#play/hostkey">Host key changed after a rebuild</a> · <a href="index.html#fix/host-key-verification-failed">Interactive version</a></p>
+    </article>
+    <article class="card answer" id="could-not-resolve-hostname">
+      <h2>Could not resolve hostname</h2>
+      <p>UNREACHABLE with a name, not an address, in the message.</p>
+      <h4>Error</h4>
+      <pre><code>fatal: [db-03]: UNREACHABLE! =&gt; {&quot;changed&quot;: false, &quot;msg&quot;: &quot;Failed to connect to the host via ssh: ssh: Could not resolve hostname db-03: Name or service not known&quot;, &quot;unreachable&quot;: true}</code></pre>
+      <h4>Why it happens</h4>
+      <ul><li>The inventory name is not in DNS and has no ansible_host</li><li>A typo in ansible_host</li></ul>
+      <h4>Confirm the cause</h4>
+      <pre><code>ansible-inventory --host &lt;host&gt;
+getent hosts &lt;host&gt;</code></pre>
+      <h4>Fix</h4>
+      <ol><li>Set ansible_host to the address, or fix DNS</li></ol>
+      <h4>Prevent it</h4>
+      <ul><li>Keep inventory names and DNS in one source, such as a dynamic inventory</li></ul>
+      <p class="practise">Practise it: <a href="index.html#play/timeout">Connection timed out</a> · <a href="index.html#fix/could-not-resolve-hostname">Interactive version</a></p>
+    </article>
+    <article class="card answer" id="missing-sudo-password">
+      <h2>Missing sudo password</h2>
+      <p>Tasks with become fail immediately on some hosts.</p>
+      <h4>Error</h4>
+      <pre><code>fatal: [web-03]: FAILED! =&gt; {&quot;msg&quot;: &quot;Missing sudo password&quot;}</code></pre>
+      <h4>Why it happens</h4>
+      <ul><li>sudo on that host requires a password for ansible_user</li><li>No password was given: neither -K nor ansible_become_password</li></ul>
+      <h4>Confirm the cause</h4>
+      <pre><code>ssh &lt;user&gt;@&lt;address&gt; sudo -n true   # 'a password is required'</code></pre>
+      <h4>Fix</h4>
+      <ol><li>Run with -K (--ask-become-pass)</li><li>Or store ansible_become_password in Vault for that group</li></ol>
+      <h4>Prevent it</h4>
+      <ul><li>Decide per environment: NOPASSWD sudo for a dedicated deploy user, or a vaulted become password</li></ul>
+      <p class="practise">Practise it: <a href="index.html#play/sudopass">Missing sudo password</a> · <a href="index.html#fix/missing-sudo-password">Interactive version</a></p>
+    </article>
+    <article class="card answer" id="incorrect-sudo-password">
+      <h2>Incorrect sudo password</h2>
+      <p>Become fails after you supplied a password.</p>
+      <h4>Error</h4>
+      <pre><code>fatal: [web-03]: FAILED! =&gt; {&quot;msg&quot;: &quot;Incorrect sudo password&quot;}</code></pre>
+      <h4>Why it happens</h4>
+      <ul><li>The password typed at -K, or ansible_become_password, is wrong for that host</li><li>Different hosts have different passwords</li></ul>
+      <h4>Confirm the cause</h4>
+      <pre><code>ssh &lt;user&gt;@&lt;address&gt; sudo -v</code></pre>
+      <h4>Fix</h4>
+      <ol><li>Use the right password; set it per group in Vault if it differs</li></ol>
+      <h4>Prevent it</h4>
+      <ul><li>Rotate become passwords through your secret store, not by hand</li></ul>
+      <p class="practise">Practise it: <a href="index.html#play/sudopass">Missing sudo password</a> · <a href="index.html#fix/incorrect-sudo-password">Interactive version</a></p>
+    </article>
+    <article class="card answer" id="unprivileged-become">
+      <h2>Failed to set permissions on the temporary files</h2>
+      <p>A task with become_user set to a normal user (postgres, app) fails before running.</p>
+      <h4>Error</h4>
+      <pre><code>fatal: [db-01]: FAILED! =&gt; {&quot;msg&quot;: &quot;Failed to set permissions on the temporary files Ansible needs to create when becoming an unprivileged user (rc: 1, err: chmod: invalid mode: 'A+user:postgres:rx:allow'\n...}). For information on working around this, see https://docs.ansible.com/ansible-core/2.18/playbook_guide/playbooks_privilege_escalation.html#risks-of-becoming-an-unprivileged-user&quot;}</code></pre>
+      <h4>Why it happens</h4>
+      <ul><li>Ansible must let the target user read its temporary module file, and the host has no setfacl (acl package)</li><li>Pipelining is off, so a temporary file is needed at all</li></ul>
+      <h4>Confirm the cause</h4>
+      <pre><code>ansible &lt;host&gt; -a 'which setfacl'
+ansible-config dump --only-changed</code></pre>
+      <h4>Fix</h4>
+      <ol><li>Install the acl package on the host</li><li>Or set pipelining = True under [ssh_connection]</li></ol>
+      <h4>Prevent it</h4>
+      <ul><li>Include acl in base images; never set allow_world_readable_tmpfiles</li></ul>
+      <p class="practise">Practise it: <a href="index.html#play/becomeuser">Becoming an unprivileged user fails</a> · <a href="index.html#fix/unprivileged-become">Interactive version</a></p>
+    </article>
+    <article class="card answer" id="sudo-parse-error">
+      <h2>MODULE FAILURE: sudo parse error in /etc/sudoers.d</h2>
+      <p>Every become task fails on a host after a sudoers change.</p>
+      <h4>Error</h4>
+      <pre><code>fatal: [web-01]: FAILED! =&gt; {&quot;changed&quot;: false, &quot;module_stderr&quot;: &quot;&gt;&gt;&gt; /etc/sudoers.d/monitoring: syntax error near line 1 &lt;&lt;&lt;\nsudo: parse error in /etc/sudoers.d/monitoring near line 1\nsudo: no valid sudoers sources found, quitting\n&quot;, &quot;msg&quot;: &quot;MODULE FAILURE\nSee stdout/stderr for the exact error&quot;, &quot;rc&quot;: 1}</code></pre>
+      <h4>Why it happens</h4>
+      <ul><li>A file with a syntax error was written to /etc/sudoers.d; sudo refuses to run at all</li></ul>
+      <h4>Confirm the cause</h4>
+      <pre><code>ssh &lt;user&gt;@&lt;address&gt; sudo -n true
+Console access: visudo -c</code></pre>
+      <h4>Fix</h4>
+      <ol><li>Repair the file from the console or a root session (visudo -f /etc/sudoers.d/&lt;file&gt;)</li></ol>
+      <h4>Prevent it</h4>
+      <ul><li>Always deploy sudoers with validate: visudo -cf %s</li></ul>
+      <p class="practise">Practise it: <a href="index.html#play/sudoers">A sudoers typo locks everyone out</a> · <a href="index.html#fix/sudo-parse-error">Interactive version</a></p>
+    </article>
+    <article class="card answer" id="no-hosts-matched">
+      <h2>Could not match supplied host pattern / skipping: no hosts matched</h2>
+      <p>The run is green, but nothing happened.</p>
+      <h4>Error</h4>
+      <pre><code>[WARNING]: Could not match supplied host pattern, ignoring: webservers
+
+PLAY [Message of the day] ****
+skipping: no hosts matched</code></pre>
+      <h4>Why it happens</h4>
+      <ul><li>The play's hosts: names a group that does not exist</li><li>The wrong inventory was used (-i or ansible.cfg)</li></ul>
+      <h4>Confirm the cause</h4>
+      <pre><code>ansible-inventory --graph
+ansible-playbook &lt;playbook&gt; --list-hosts</code></pre>
+      <h4>Fix</h4>
+      <ol><li>Use the real group name in hosts:, or add the group to the inventory</li></ol>
+      <h4>Prevent it</h4>
+      <ul><li>Treat warnings as failures in CI, and check the recap lists the hosts you expect</li></ul>
+      <p class="practise">Practise it: <a href="index.html#play/nohosts">Play matched no hosts</a> · <a href="index.html#fix/no-hosts-matched">Interactive version</a></p>
+    </article>
+    <article class="card answer" id="limit-no-hosts">
+      <h2>--limit leaves us with no hosts to target</h2>
+      <p>ansible-playbook stops at once when given --limit.</p>
+      <h4>Error</h4>
+      <pre><code>[WARNING]: Could not match supplied host pattern, ignoring: web01
+ERROR! Specified inventory, host pattern and/or --limit leaves us with no hosts to target.</code></pre>
+      <h4>Why it happens</h4>
+      <ul><li>A typo in the --limit host or group</li><li>The limit and the play's hosts do not overlap</li></ul>
+      <h4>Confirm the cause</h4>
+      <pre><code>ansible-inventory --graph
+ansible-playbook &lt;playbook&gt; --limit &lt;host&gt; --list-hosts</code></pre>
+      <h4>Fix</h4>
+      <ol><li>Use a name from the inventory; preview with --list-hosts</li></ol>
+      <h4>Prevent it</h4>
+      <ul><li>Always preview a limit with --list-hosts before changing anything</li></ul>
+      <p class="practise">Practise it: <a href="index.html#play/limit">--limit typo runs nothing</a> · <a href="index.html#fix/limit-no-hosts">Interactive version</a></p>
+    </article>
+    <article class="card answer" id="inventory-not-parsed">
+      <h2>Unable to parse ... as an inventory source</h2>
+      <p>Only localhost exists; every pattern matches nothing.</p>
+      <h4>Error</h4>
+      <pre><code>[WARNING]: Unable to parse /home/ops/project/inventory/hostz.ini as an inventory source
+[WARNING]: No inventory was parsed, only implicit localhost is available</code></pre>
+      <h4>Why it happens</h4>
+      <ul><li>The -i path or the inventory setting in ansible.cfg is wrong</li><li>Ansible read a different ansible.cfg than you expected</li></ul>
+      <h4>Confirm the cause</h4>
+      <pre><code>ansible --version   # config file = ...
+ls &lt;inventory path&gt;</code></pre>
+      <h4>Fix</h4>
+      <ol><li>Point -i or ansible.cfg's inventory at the real file</li></ol>
+      <h4>Prevent it</h4>
+      <ul><li>Keep ansible.cfg in the project and run from the project directory</li></ul>
+      <p class="practise">Practise it: <a href="index.html#play/nohosts">Play matched no hosts</a> · <a href="index.html#fix/inventory-not-parsed">Interactive version</a></p>
+    </article>
+    <article class="card answer" id="tags-skipped-task">
+      <h2>A task did not run with --tags</h2>
+      <p>A run with --tags succeeds but skips a step the change needed; the app fails afterwards.</p>
+      <h4>Error</h4>
+      <pre><code>TASK [Run database migrations] does not appear in the output of ansible-playbook deploy.yml --tags deploy</code></pre>
+      <h4>Why it happens</h4>
+      <ul><li>The task has no tag, so --tags skips it silently</li><li>Tags on include_tasks apply to the include only, not to the tasks inside</li><li>The task is tagged never</li></ul>
+      <h4>Confirm the cause</h4>
+      <pre><code>ansible-playbook &lt;playbook&gt; --tags &lt;tag&gt; --list-tasks</code></pre>
+      <h4>Fix</h4>
+      <ol><li>Tag the task, or tag it always when every run needs it</li><li>Use import_tasks, or apply: tags on include_tasks</li></ol>
+      <h4>Prevent it</h4>
+      <ul><li>Review --list-tasks for the exact tags your pipeline uses</li></ul>
+      <p class="practise">Practise it: <a href="index.html#play/tagskip">--tags skips a critical task</a> · <a href="index.html#fix/tags-skipped-task">Interactive version</a></p>
+    </article>
+    <article class="card answer" id="yaml-mapping-values">
+      <h2>mapping values are not allowed in this context</h2>
+      <p>The playbook does not start; the error names a line and column.</p>
+      <h4>Error</h4>
+      <pre><code>ERROR! We were unable to read either as JSON nor YAML, these are the errors we got from each:
+JSON: Expecting value: line 1 column 1 (char 0)
+
+Syntax Error while loading YAML.
+  mapping values are not allowed in this context</code></pre>
+      <h4>Why it happens</h4>
+      <ul><li>A line is indented deeper than the key above it, so YAML reads it as part of a value</li><li>A plain value contains ': ' (quote it)</li></ul>
+      <h4>Confirm the cause</h4>
+      <pre><code>ansible-playbook &lt;playbook&gt; --syntax-check
+cat -n &lt;playbook&gt;</code></pre>
+      <h4>Fix</h4>
+      <ol><li>Line up the module with name: of its task, options two spaces deeper</li><li>Quote values that contain ': '</li></ol>
+      <h4>Prevent it</h4>
+      <ul><li>Use an editor with YAML support and run yamllint and ansible-lint in CI</li></ul>
+      <p class="practise">Practise it: <a href="index.html#play/indent">YAML indentation error</a> · <a href="index.html#fix/yaml-mapping-values">Interactive version</a></p>
+    </article>
+    <article class="card answer" id="yaml-unhashable-key">
+      <h2>found unacceptable key (unhashable type: 'AnsibleMapping')</h2>
+      <p>A YAML error on a line where a value starts with {{.</p>
+      <h4>Error</h4>
+      <pre><code>Syntax Error while loading YAML.
+  found unacceptable key (unhashable type: 'AnsibleMapping')
+...
+We could be wrong, but this one looks like it might be an issue with
+missing quotes. Always quote template expression brackets when they
+start a value.</code></pre>
+      <h4>Why it happens</h4>
+      <ul><li>A value starting with {{ is not quoted, so YAML reads it as a dictionary</li></ul>
+      <h4>Confirm the cause</h4>
+      <pre><code>ansible-playbook &lt;playbook&gt; --syntax-check</code></pre>
+      <h4>Fix</h4>
+      <ol><li>Quote the whole value: &quot;{{ app_dir }}/releases&quot;</li></ol>
+      <h4>Prevent it</h4>
+      <ul><li>Quote every value that starts with {{; ansible-lint flags it</li></ul>
+      <p class="practise">Practise it: <a href="index.html#play/quotes">Unquoted Jinja breaks YAML</a> · <a href="index.html#fix/yaml-unhashable-key">Interactive version</a></p>
+    </article>
+    <article class="card answer" id="yaml-expected-key">
+      <h2>did not find expected key</h2>
+      <p>A YAML error near a line whose indentation does not match its neighbours.</p>
+      <h4>Error</h4>
+      <pre><code>Syntax Error while loading YAML.
+  did not find expected key</code></pre>
+      <h4>Why it happens</h4>
+      <ul><li>A line indented by an odd amount, between two levels</li><li>A list item (-) where a key was expected</li></ul>
+      <h4>Confirm the cause</h4>
+      <pre><code>cat -n &lt;file&gt;
+ansible-playbook &lt;playbook&gt; --syntax-check</code></pre>
+      <h4>Fix</h4>
+      <ol><li>Make the line's indentation match its siblings</li></ol>
+      <h4>Prevent it</h4>
+      <ul><li>Two spaces per level, consistently; yamllint in CI</li></ul>
+      <p class="practise">Practise it: <a href="index.html#play/indent">YAML indentation error</a> · <a href="index.html#fix/yaml-expected-key">Interactive version</a></p>
+    </article>
+    <article class="card answer" id="yaml-tab">
+      <h2>found character that cannot start any token</h2>
+      <p>A YAML error at column 1 of an indented line, or before @ or a backtick.</p>
+      <h4>Error</h4>
+      <pre><code>Syntax Error while loading YAML.
+  found character that cannot start any token</code></pre>
+      <h4>Why it happens</h4>
+      <ul><li>A tab character in indentation (YAML allows spaces only)</li><li>A plain value starting with @ or `</li></ul>
+      <h4>Confirm the cause</h4>
+      <pre><code>grep -nP '\t' &lt;file&gt;</code></pre>
+      <h4>Fix</h4>
+      <ol><li>Replace tabs with spaces; quote values that start with @ or `</li></ol>
+      <h4>Prevent it</h4>
+      <ul><li>Configure the editor to insert spaces in YAML files</li></ul>
+      <p class="practise">Practise it: <a href="index.html#play/indent">YAML indentation error</a> · <a href="index.html#fix/yaml-tab">Interactive version</a></p>
+    </article>
+    <article class="card answer" id="not-valid-attribute">
+      <h2>'x' is not a valid attribute for a Play</h2>
+      <p>The playbook stops at load time naming a keyword.</p>
+      <h4>Error</h4>
+      <pre><code>ERROR! 'when' is not a valid attribute for a Play</code></pre>
+      <h4>Why it happens</h4>
+      <ul><li>A task keyword used at play level (when, loop, register)</li><li>A misspelt keyword (become_users, gather_fact)</li><li>A task indented out of the tasks list</li></ul>
+      <h4>Confirm the cause</h4>
+      <pre><code>ansible-playbook &lt;playbook&gt; --syntax-check</code></pre>
+      <h4>Fix</h4>
+      <ol><li>Move the keyword to a task or block, or fix the spelling</li></ol>
+      <h4>Prevent it</h4>
+      <ul><li>ansible-lint's schema checks catch these before review</li></ul>
+      <p class="practise">Practise it: <a href="index.html#play/indent">YAML indentation error</a> · <a href="index.html#fix/not-valid-attribute">Interactive version</a></p>
+    </article>
+    <article class="card answer" id="conflicting-action">
+      <h2>conflicting action statements</h2>
+      <p>A task names two modules.</p>
+      <h4>Error</h4>
+      <pre><code>ERROR! conflicting action statements: ansible.builtin.apt, ansible.builtin.service</code></pre>
+      <h4>Why it happens</h4>
+      <ul><li>Two module keys in one task, often a missing '- name:' between tasks</li></ul>
+      <h4>Confirm the cause</h4>
+      <pre><code>cat -n &lt;file&gt;</code></pre>
+      <h4>Fix</h4>
+      <ol><li>Split them into two tasks</li></ol>
+      <h4>Prevent it</h4>
+      <ul><li>One module per task; name every task</li></ul>
+      <p class="practise">Practise it: <a href="index.html#play/indent">YAML indentation error</a> · <a href="index.html#fix/conflicting-action">Interactive version</a></p>
+    </article>
+    <article class="card answer" id="no-module-detected">
+      <h2>no module/action detected in task</h2>
+      <p>A task has a name but nothing to do.</p>
+      <h4>Error</h4>
+      <pre><code>ERROR! no module/action detected in task.</code></pre>
+      <h4>Why it happens</h4>
+      <ul><li>The module line is missing or mis-indented out of the task</li></ul>
+      <h4>Confirm the cause</h4>
+      <pre><code>cat -n &lt;file&gt;</code></pre>
+      <h4>Fix</h4>
+      <ol><li>Add the module, indented at the same level as name:</li></ol>
+      <h4>Prevent it</h4>
+      <ul><li>--syntax-check in CI</li></ul>
+      <p class="practise">Practise it: <a href="index.html#play/indent">YAML indentation error</a> · <a href="index.html#fix/no-module-detected">Interactive version</a></p>
+    </article>
+    <article class="card answer" id="couldnt-resolve-module">
+      <h2>couldn't resolve module/action</h2>
+      <p>The playbook stops before the first play, naming a module.</p>
+      <h4>Error</h4>
+      <pre><code>ERROR! couldn't resolve module/action 'community.general.ufw'. This often indicates a misspelling, missing collection, or incorrect module path.</code></pre>
+      <h4>Why it happens</h4>
+      <ul><li>The collection that provides it is not installed on this control node (common in CI)</li><li>A typo in the module name</li><li>A short name (ufw) for a module that lives in a collection that is not installed</li></ul>
+      <h4>Confirm the cause</h4>
+      <pre><code>ansible-galaxy collection list
+ansible-doc &lt;module&gt;
+cat requirements.yml</code></pre>
+      <h4>Fix</h4>
+      <ol><li>Add the collection to requirements.yml and run ansible-galaxy collection install -r requirements.yml</li></ol>
+      <h4>Prevent it</h4>
+      <ul><li>Pin every collection in requirements.yml and install from it in CI</li></ul>
+      <p class="practise">Practise it: <a href="index.html#play/collection">couldn't resolve module/action</a> · <a href="index.html#fix/couldnt-resolve-module">Interactive version</a></p>
+    </article>
+    <article class="card answer" id="unsupported-parameters">
+      <h2>Unsupported parameters for module</h2>
+      <p>A task fails on every host before doing anything.</p>
+      <h4>Error</h4>
+      <pre><code>fatal: [web-01]: FAILED! =&gt; {&quot;changed&quot;: false, &quot;msg&quot;: &quot;Unsupported parameters for (ansible.builtin.apt) module: package_name. Supported parameters include: allow_change_held_packages, ... upgrade (default-release, install-recommends, package, pkg, update-cache).&quot;}</code></pre>
+      <h4>Why it happens</h4>
+      <ul><li>A misspelt or invented option</li><li>An option from another module or a newer collection version</li></ul>
+      <h4>Confirm the cause</h4>
+      <pre><code>ansible-doc &lt;module&gt;</code></pre>
+      <h4>Fix</h4>
+      <ol><li>Use the option names ansible-doc lists (aliases are in brackets)</li></ol>
+      <h4>Prevent it</h4>
+      <ul><li>ansible-lint validates module arguments</li></ul>
+      <p class="practise">Practise it: <a href="index.html#play/param">Unsupported parameters</a> · <a href="index.html#fix/unsupported-parameters">Interactive version</a></p>
+    </article>
+    <article class="card answer" id="module-failure-python">
+      <h2>MODULE FAILURE / python3: not found</h2>
+      <p>Gathering Facts or every task fails on a host, rc 127.</p>
+      <h4>Error</h4>
+      <pre><code>&quot;module_stdout&quot;: &quot;/bin/sh: 1: /usr/bin/python3: not found\r\n&quot;, &quot;msg&quot;: &quot;The module failed to execute correctly, you probably need to set the interpreter.\nSee stdout/stderr for the exact error&quot;, &quot;rc&quot;: 127</code></pre>
+      <h4>Why it happens</h4>
+      <ul><li>The host has no Python (minimal images)</li><li>ansible_python_interpreter points at a path that does not exist</li></ul>
+      <h4>Confirm the cause</h4>
+      <pre><code>ansible &lt;host&gt; -m raw -a 'command -v python3'</code></pre>
+      <h4>Fix</h4>
+      <ol><li>Install Python with raw: ansible &lt;host&gt; -m raw -a 'apt-get install -y python3' -b</li><li>Or correct ansible_python_interpreter</li></ol>
+      <h4>Prevent it</h4>
+      <ul><li>Include python3 in base images; leave interpreter_python on auto_silent</li></ul>
+      <p class="practise">Practise it: <a href="index.html#play/python">No Python on the new host</a> · <a href="index.html#fix/module-failure-python">Interactive version</a></p>
+    </article>
+    <article class="card answer" id="no-package-matching">
+      <h2>No package matching ... is available</h2>
+      <p>Package installs fail on some hosts only.</p>
+      <h4>Error</h4>
+      <pre><code>fatal: [web-02]: FAILED! =&gt; {&quot;changed&quot;: false, &quot;failures&quot;: [&quot;No package apache2 available.&quot;], &quot;msg&quot;: &quot;Failed to install some of the specified packages&quot;, &quot;rc&quot;: 1, &quot;results&quot;: []}</code></pre>
+      <h4>Why it happens</h4>
+      <ul><li>Package names differ between OS families (apache2 vs httpd)</li><li>The repository is not enabled, or the cache is stale (update_cache)</li><li>A pinned version that the repository does not have</li></ul>
+      <h4>Confirm the cause</h4>
+      <pre><code>ansible &lt;host&gt; -m setup -a 'filter=ansible_os_family'
+ansible &lt;host&gt; -a 'apt-cache policy &lt;package&gt;'</code></pre>
+      <h4>Fix</h4>
+      <ol><li>Load per-OS names with include_vars &quot;{{ ansible_facts['os_family'] }}.yml&quot;</li><li>Add update_cache: true, or enable the repository first</li></ol>
+      <h4>Prevent it</h4>
+      <ul><li>Test roles on every OS you support (Molecule in CI)</li></ul>
+      <p class="practise">Practise it: <a href="index.html#play/osfamily">Package name differs by OS</a> · <a href="index.html#fix/no-package-matching">Interactive version</a></p>
+    </article>
+    <article class="card answer" id="apt-lock">
+      <h2>Failed to lock apt for exclusive operation</h2>
+      <p>apt tasks fail with a lock or permission error.</p>
+      <h4>Error</h4>
+      <pre><code>fatal: [web-01]: FAILED! =&gt; {&quot;changed&quot;: false, &quot;msg&quot;: &quot;Failed to lock apt for exclusive operation: Failed to lock directory /var/lib/apt/lists/: E:Could not open lock file /var/lib/apt/lists/lock - open (13: Permission denied)&quot;}</code></pre>
+      <h4>Why it happens</h4>
+      <ul><li>The task does not use become, so it runs as a normal user (Permission denied)</li><li>Another apt run, such as unattended-upgrades, holds the lock</li></ul>
+      <h4>Confirm the cause</h4>
+      <pre><code>ansible &lt;host&gt; -b -a 'fuser /var/lib/dpkg/lock-frontend'</code></pre>
+      <h4>Fix</h4>
+      <ol><li>Add become: true to the task</li><li>Let apt wait: lock_timeout: 600 on the apt task; never delete lock files</li></ol>
+      <h4>Prevent it</h4>
+      <ul><li>Use become per task that needs root; schedule unattended upgrades outside deploy windows</li></ul>
+      <p class="practise">Practise it: <a href="index.html#play/aptlock">Could not get lock: apt is busy</a> · <a href="index.html#play/sudopass">Missing sudo password</a> · <a href="index.html#fix/apt-lock">Interactive version</a></p>
+    </article>
+    <article class="card answer" id="service-not-found">
+      <h2>Could not find the requested service</h2>
+      <p>A service task fails although the package task passed.</p>
+      <h4>Error</h4>
+      <pre><code>fatal: [web-01]: FAILED! =&gt; {&quot;changed&quot;: false, &quot;msg&quot;: &quot;Could not find the requested service httpd: host&quot;}</code></pre>
+      <h4>Why it happens</h4>
+      <ul><li>The service name differs by OS (apache2 vs httpd)</li><li>The package that provides the unit is not installed</li><li>A new unit file without daemon_reload</li></ul>
+      <h4>Confirm the cause</h4>
+      <pre><code>ansible &lt;host&gt; -a 'systemctl list-unit-files --type=service'</code></pre>
+      <h4>Fix</h4>
+      <ol><li>Use the right name per OS; add daemon_reload: true after installing unit files</li></ol>
+      <h4>Prevent it</h4>
+      <ul><li>Keep package and service names in per-OS vars files</li></ul>
+      <p class="practise">Practise it: <a href="index.html#play/osfamily">Package name differs by OS</a> · <a href="index.html#fix/service-not-found">Interactive version</a></p>
+    </article>
+    <article class="card answer" id="service-start-failed">
+      <h2>Unable to start service: Job for x.service failed</h2>
+      <p>A service will not (re)start after a config change.</p>
+      <h4>Error</h4>
+      <pre><code>fatal: [web-01]: FAILED! =&gt; {&quot;changed&quot;: false, &quot;msg&quot;: &quot;Unable to restart service app: Job for app.service failed because the control process exited with error code.\nSee \&quot;systemctl status app.service\&quot; and \&quot;journalctl -xeu app.service\&quot; for details.\n&quot;}</code></pre>
+      <h4>Why it happens</h4>
+      <ul><li>The config file is invalid: literal {{ }} from copy instead of template, a typo</li><li>The service cannot read a file it needs (owner or mode)</li><li>The port is in use</li></ul>
+      <h4>Confirm the cause</h4>
+      <pre><code>ansible &lt;host&gt; -b -a 'journalctl -u &lt;service&gt; -n 20'
+ansible &lt;host&gt; -m stat -a path=&lt;config&gt;</code></pre>
+      <h4>Fix</h4>
+      <ol><li>Fix the file (use template for .j2), its owner and its mode, then restart</li></ol>
+      <h4>Prevent it</h4>
+      <ul><li>Use validate: on config templates (nginx -t -c %s, visudo -cf %s)</li></ul>
+      <p class="practise">Practise it: <a href="index.html#play/copytemplate">Literal {{ }} in a config file</a> · <a href="index.html#play/filemode">mode: 600 is not 0600</a> · <a href="index.html#fix/service-start-failed">Interactive version</a></p>
+    </article>
+    <article class="card answer" id="health-check-failed">
+      <h2>uri: Status code was ... and not [200]</h2>
+      <p>A health check after a deploy fails: 503, 404, or -1 with Connection refused.</p>
+      <h4>Error</h4>
+      <pre><code>fatal: [web-01]: FAILED! =&gt; {&quot;changed&quot;: false, ... &quot;msg&quot;: &quot;Status code was 503 and not [200]: HTTP Error 503: Service Unavailable&quot;, &quot;status&quot;: 503, &quot;url&quot;: &quot;http://localhost:8080/healthz&quot;}</code></pre>
+      <h4>Why it happens</h4>
+      <ul><li>The app is not running the new configuration yet: its restart handler runs at the end of the play</li><li>A step the release needs was skipped (a migration left out by --tags)</li><li>The release itself is broken</li><li>The check uses the wrong port or path</li></ul>
+      <h4>Confirm the cause</h4>
+      <pre><code>ansible &lt;group&gt; -m uri -a url=http://localhost:8080/healthz
+ansible &lt;group&gt; -b -a 'systemctl status &lt;service&gt;'
+ansible-playbook &lt;playbook&gt; --tags &lt;tag&gt; --list-tasks</code></pre>
+      <h4>Fix</h4>
+      <ol><li>Add meta: flush_handlers before the check</li><li>Run the skipped step (tag it), or roll back the release</li></ol>
+      <h4>Prevent it</h4>
+      <ul><li>Deploy with serial so a failing check stops the rollout after the first batch</li></ul>
+      <p class="practise">Practise it: <a href="index.html#play/tagskip">--tags skips a critical task</a> · <a href="index.html#play/flush">Handler runs too late</a> · <a href="index.html#play/serial">A rolling update takes every host down</a> · <a href="index.html#fix/health-check-failed">Interactive version</a></p>
+    </article>
+    <article class="card answer" id="errno-2">
+      <h2>[Errno 2] No such file or directory</h2>
+      <p>A command task fails with rc 2 and Errno 2.</p>
+      <h4>Error</h4>
+      <pre><code>fatal: [web-01]: FAILED! =&gt; {&quot;changed&quot;: false, &quot;cmd&quot;: &quot;/usr/local/bin/lb-ctl disable web-01&quot;, &quot;msg&quot;: &quot;[Errno 2] No such file or directory: b'/usr/local/bin/lb-ctl'&quot;, &quot;rc&quot;: 2}</code></pre>
+      <h4>Why it happens</h4>
+      <ul><li>The program does not exist on that host</li><li>The task should run elsewhere (delegate_to)</li><li>command does not use a shell: pipes and redirects reach the program as arguments</li></ul>
+      <h4>Confirm the cause</h4>
+      <pre><code>ansible &lt;host&gt; -a 'command -v &lt;program&gt;'</code></pre>
+      <h4>Fix</h4>
+      <ol><li>Install the program, use delegate_to for the host that has it, or use shell when you need shell features</li></ol>
+      <h4>Prevent it</h4>
+      <ul><li>Prefer modules to commands</li></ul>
+      <p class="practise">Practise it: <a href="index.html#play/delegate">Load balancer step runs on the wrong host</a> · <a href="index.html#fix/errno-2">Interactive version</a></p>
+    </article>
+    <article class="card answer" id="destination-not-writable">
+      <h2>Destination ... not writable / does not exist</h2>
+      <p>copy or template fails before writing.</p>
+      <h4>Error</h4>
+      <pre><code>fatal: [web-01]: FAILED! =&gt; {&quot;changed&quot;: false, &quot;msg&quot;: &quot;Destination /etc/nginx not writable&quot;}</code></pre>
+      <h4>Why it happens</h4>
+      <ul><li>The task needs become to write there</li><li>The destination directory does not exist yet</li></ul>
+      <h4>Confirm the cause</h4>
+      <pre><code>ansible &lt;host&gt; -m stat -a path=&lt;directory&gt;</code></pre>
+      <h4>Fix</h4>
+      <ol><li>Add become: true, or create the directory first with the file module</li></ol>
+      <h4>Prevent it</h4>
+      <ul><li>Create directories explicitly in the role</li></ul>
+      <p class="practise">Practise it: <a href="index.html#play/sudopass">Missing sudo password</a> · <a href="index.html#fix/destination-not-writable">Interactive version</a></p>
+    </article>
+    <article class="card answer" id="non-zero-return-code">
+      <h2>non-zero return code</h2>
+      <p>A command or shell task fails with rc other than 0.</p>
+      <h4>Error</h4>
+      <pre><code>fatal: [web-01]: FAILED! =&gt; {&quot;changed&quot;: true, &quot;cmd&quot;: [&quot;/opt/app/bin/migrate&quot;], ... &quot;msg&quot;: &quot;non-zero return code&quot;, &quot;rc&quot;: 1, &quot;stderr&quot;: &quot;...&quot;}</code></pre>
+      <h4>Why it happens</h4>
+      <ul><li>The command failed: read stderr in the result</li><li>The command treats a normal condition as an error (grep with no match returns 1)</li></ul>
+      <h4>Confirm the cause</h4>
+      <pre><code>ansible-playbook &lt;playbook&gt; -v   # full result with stdout and stderr</code></pre>
+      <h4>Fix</h4>
+      <ol><li>Fix the command, or define success with failed_when</li></ol>
+      <h4>Prevent it</h4>
+      <ul><li>Use block/rescue for steps that may fail and need a rollback</li></ul>
+      <p class="practise">Practise it: <a href="index.html#play/rescue">A failed deploy leaves the app down</a> · <a href="index.html#play/runonce">Migrations run on every host</a> · <a href="index.html#fix/non-zero-return-code">Interactive version</a></p>
+    </article>
+    <article class="card answer" id="undefined-variable">
+      <h2>The task includes an option with an undefined variable</h2>
+      <p>A task fails on some hosts naming a variable.</p>
+      <h4>Error</h4>
+      <pre><code>fatal: [api-01]: FAILED! =&gt; {&quot;msg&quot;: &quot;The task includes an option with an undefined variable. The error was: 'nginx_worker_connections' is undefined. 'nginx_worker_connections' is undefined\n\nThe error appears to be in ...&quot;}</code></pre>
+      <h4>Why it happens</h4>
+      <ul><li>The variable is defined for some groups only</li><li>A typo in the variable name</li><li>The variable comes from a fact or register that did not run on this host</li></ul>
+      <h4>Confirm the cause</h4>
+      <pre><code>ansible-inventory --host &lt;host&gt;
+grep -rn &lt;variable&gt; group_vars host_vars roles</code></pre>
+      <h4>Fix</h4>
+      <ol><li>Define it in the role's defaults/main.yml, or in group_vars/all</li><li>Use | default(...) where a default makes sense</li></ol>
+      <h4>Prevent it</h4>
+      <ul><li>Every role variable gets a default; consider argument_specs for roles</li></ul>
+      <p class="practise">Practise it: <a href="index.html#play/undefined">Undefined variable</a> · <a href="index.html#play/registerloop">register in a loop</a> · <a href="index.html#fix/undefined-variable">Interactive version</a></p>
+    </article>
+    <article class="card answer" id="dict-no-attribute">
+      <h2>'dict object' has no attribute</h2>
+      <p>A template or debug fails reading a field of a registered result or a variable.</p>
+      <h4>Error</h4>
+      <pre><code>The error was: 'dict object' has no attribute 'stdout'. 'dict object' has no attribute 'stdout'</code></pre>
+      <h4>Why it happens</h4>
+      <ul><li>A registered loop stores results under .results, not .stdout</li><li>with_items over a dict gives the whole dict as item</li><li>A typo in the key name</li></ul>
+      <h4>Confirm the cause</h4>
+      <pre><code>ansible-playbook &lt;playbook&gt; with a debug: var=&lt;name&gt; task</code></pre>
+      <h4>Fix</h4>
+      <ol><li>Use &lt;name&gt;.results | map(attribute='stdout') | list, or the right key</li></ol>
+      <h4>Prevent it</h4>
+      <ul><li>Print registered variables once while writing the play</li></ul>
+      <p class="practise">Practise it: <a href="index.html#play/registerloop">register in a loop</a> · <a href="index.html#play/loopdict">Looping over a dictionary</a> · <a href="index.html#fix/dict-no-attribute">Interactive version</a></p>
+    </article>
+    <article class="card answer" id="hostvars-no-attribute">
+      <h2>HostVarsVars object has no attribute 'ansible_default_ipv4'</h2>
+      <p>A template reading other hosts' facts fails.</p>
+      <h4>Error</h4>
+      <pre><code>fatal: [lb-01]: FAILED! =&gt; {&quot;changed&quot;: false, &quot;msg&quot;: &quot;AnsibleUndefinedVariable: 'ansible.vars.hostvars.HostVarsVars object' has no attribute 'ansible_default_ipv4'. ...&quot;}</code></pre>
+      <h4>Why it happens</h4>
+      <ul><li>The run never gathered facts from those hosts</li><li>They were excluded by --limit</li></ul>
+      <h4>Confirm the cause</h4>
+      <pre><code>ansible-playbook &lt;playbook&gt; --list-hosts</code></pre>
+      <h4>Fix</h4>
+      <ol><li>Add a play that gathers facts from those hosts first, or use inventory values such as ansible_host</li><li>Or enable fact caching</li></ol>
+      <h4>Prevent it</h4>
+      <ul><li>Do not read hostvars facts of hosts outside the run</li></ul>
+      <p class="practise">Practise it: <a href="index.html#play/hostvarsfacts">Facts of other hosts are missing</a> · <a href="index.html#fix/hostvars-no-attribute">Interactive version</a></p>
+    </article>
+    <article class="card answer" id="invalid-loop-data">
+      <h2>Invalid data passed to 'loop', it requires a list</h2>
+      <p>A looped task fails before its first item.</p>
+      <h4>Error</h4>
+      <pre><code>fatal: [web-01]: FAILED! =&gt; {&quot;msg&quot;: &quot;Invalid data passed to 'loop', it requires a list, got this instead: {'alice': {'shell': '/bin/bash'}}. Hint: If you passed a list/dict of just one element, try adding wantlist=True to your lookup invocation or use q/query instead of lookup.&quot;}</code></pre>
+      <h4>Why it happens</h4>
+      <ul><li>loop got a dictionary or a string</li></ul>
+      <h4>Confirm the cause</h4>
+      <pre><code>ansible &lt;host&gt; -m debug -a var=&lt;variable&gt;</code></pre>
+      <h4>Fix</h4>
+      <ol><li>Use loop: &quot;{{ my_dict | dict2items }}&quot; and item.key, item.value</li></ol>
+      <h4>Prevent it</h4>
+      <ul><li>Keep lists as lists in group_vars; convert dicts explicitly</li></ul>
+      <p class="practise">Practise it: <a href="index.html#play/loopdict">Looping over a dictionary</a> · <a href="index.html#fix/invalid-loop-data">Interactive version</a></p>
+    </article>
+    <article class="card answer" id="conditional-failed">
+      <h2>The conditional check ... failed</h2>
+      <p>A task with when fails instead of skipping.</p>
+      <h4>Error</h4>
+      <pre><code>fatal: [edge-001]: FAILED! =&gt; {&quot;msg&quot;: &quot;The conditional check 'ansible_facts['os_family'] == 'Debian'' failed. The error was: error while evaluating conditional (ansible_facts['os_family'] == 'Debian'): 'ansible_facts' is undefined. ...&quot;}</code></pre>
+      <h4>Why it happens</h4>
+      <ul><li>The condition uses an undefined variable or fact (facts were not gathered)</li><li>A typo in the expression</li></ul>
+      <h4>Confirm the cause</h4>
+      <pre><code>ansible &lt;host&gt; -m debug -a var=&lt;variable&gt;</code></pre>
+      <h4>Fix</h4>
+      <ol><li>Gather the facts you need (gather_subset: [min] is cheap), or add 'is defined' checks</li></ol>
+      <h4>Prevent it</h4>
+      <ul><li>Write conditions without {{ }} and test them with debug first</li></ul>
+      <p class="practise">Practise it: <a href="index.html#play/facts">Fact gathering is slow on 500 hosts</a> · <a href="index.html#fix/conditional-failed">Interactive version</a></p>
+    </article>
+    <article class="card answer" id="when-always-true">
+      <h2>when runs although the variable is false</h2>
+      <p>A task guarded by a boolean runs even when you passed false.</p>
+      <h4>Error</h4>
+      <pre><code>TASK [Install debugging tools] ****
+changed: [web-01]   (run with -e install_debug_tools=false)</code></pre>
+      <h4>Why it happens</h4>
+      <ul><li>-e key=value always passes strings, and the string 'false' is true</li><li>A quoted 'false' or 'no' in YAML is a string too</li></ul>
+      <h4>Confirm the cause</h4>
+      <pre><code>ansible &lt;host&gt; -m debug -a 'var=&lt;variable&gt;' -e &lt;variable&gt;=false   # shows &quot;false&quot; in quotes</code></pre>
+      <h4>Fix</h4>
+      <ol><li>Use when: &lt;variable&gt; | bool</li></ol>
+      <h4>Prevent it</h4>
+      <ul><li>Filter every externally supplied boolean with | bool</li></ul>
+      <p class="practise">Practise it: <a href="index.html#play/stringfalse">when is always true</a> · <a href="index.html#fix/when-always-true">Interactive version</a></p>
+    </article>
+    <article class="card answer" id="wrong-variable-value">
+      <h2>A variable has the wrong value on some hosts</h2>
+      <p>The run is green, but one host (or every host) uses a value other than the one you set.</p>
+      <h4>Error</h4>
+      <pre><code>ansible-inventory --host web-02 shows &quot;app_version&quot;: &quot;2.1&quot; while group_vars/web.yml says &quot;2.4&quot;</code></pre>
+      <h4>Why it happens</h4>
+      <ul><li>A stronger source wins: host_vars beat group_vars; role vars/ beat inventory; -e beats everything</li><li>Two groups at the same depth set it; the later one by name wins</li><li>A stale override left in host_vars</li></ul>
+      <h4>Confirm the cause</h4>
+      <pre><code>ansible-inventory --host &lt;host&gt;
+ansible &lt;host&gt; -m debug -a var=&lt;variable&gt;
+grep -rn &lt;variable&gt; inventory group_vars host_vars roles</code></pre>
+      <h4>Fix</h4>
+      <ol><li>Remove the stronger value, or set yours at a level that wins</li><li>Move role tunables from vars/ to defaults/</li></ol>
+      <h4>Prevent it</h4>
+      <ul><li>Set each variable in one place; keep role tunables in defaults/main.yml</li></ul>
+      <p class="practise">Practise it: <a href="index.html#play/hostvars">One host stays on the old version</a> · <a href="index.html#play/rolevars">Role vars beat the inventory</a> · <a href="index.html#fix/wrong-variable-value">Interactive version</a></p>
+    </article>
+    <article class="card answer" id="template-literal-braces">
+      <h2>Config file contains literal {{ }}</h2>
+      <p>A config file on the host still has {{ variable }} in it; the service fails to start.</p>
+      <h4>Error</h4>
+      <pre><code>port = {{ app_port }}   (in /etc/app/app.conf on the host)</code></pre>
+      <h4>Why it happens</h4>
+      <ul><li>The file was shipped with copy, which does not render Jinja</li><li>The template is under files/ instead of templates/</li></ul>
+      <h4>Confirm the cause</h4>
+      <pre><code>ansible &lt;host&gt; -a 'cat &lt;config&gt;'</code></pre>
+      <h4>Fix</h4>
+      <ol><li>Use the template module and keep .j2 files in templates/</li></ol>
+      <h4>Prevent it</h4>
+      <ul><li>Name templates .j2 and review modules in X-ray</li></ul>
+      <p class="practise">Practise it: <a href="index.html#play/copytemplate">Literal {{ }} in a config file</a> · <a href="index.html#fix/template-literal-braces">Interactive version</a></p>
+    </article>
+    <article class="card answer" id="handler-not-found">
+      <h2>The requested handler was not found</h2>
+      <p>The run stops after a task that changed something.</p>
+      <h4>Error</h4>
+      <pre><code>ERROR! The requested handler 'reload nginx' was not found in either the main handlers list nor in the listening handlers list</code></pre>
+      <h4>Why it happens</h4>
+      <ul><li>notify does not match a handler name exactly (case matters)</li><li>The handler is in a role that was not loaded</li></ul>
+      <h4>Confirm the cause</h4>
+      <pre><code>grep -rn -i '&lt;name&gt;' &lt;playbook&gt; roles/*/handlers</code></pre>
+      <h4>Fix</h4>
+      <ol><li>Make notify match the handler's name, or add listen: to the handler</li><li>Reload once by hand, since the changed file will not notify again</li></ol>
+      <h4>Prevent it</h4>
+      <ul><li>Use listen: topics for handlers several tasks notify</li></ul>
+      <p class="practise">Practise it: <a href="index.html#play/handlername">Handler not found</a> · <a href="index.html#fix/handler-not-found">Interactive version</a></p>
+    </article>
+    <article class="card answer" id="handler-did-not-run">
+      <h2>Handler did not run: service still uses old config</h2>
+      <p>The config file is right but the service behaves as before.</p>
+      <h4>Error</h4>
+      <pre><code>TASK [Write nginx.conf] ****
+ok: [web-01]   (no RUNNING HANDLER)</code></pre>
+      <h4>Why it happens</h4>
+      <ul><li>A previous run changed the file and failed before handlers ran</li><li>Handlers run at the end of the play, after the tasks that needed them</li></ul>
+      <h4>Confirm the cause</h4>
+      <pre><code>ansible &lt;host&gt; -b -a 'systemctl status &lt;service&gt;'   # compare start time with the file's mtime</code></pre>
+      <h4>Fix</h4>
+      <ol><li>Restart or reload once by hand</li><li>Add meta: flush_handlers where later tasks need the change</li></ol>
+      <h4>Prevent it</h4>
+      <ul><li>Set force_handlers: true on plays that manage services</li></ul>
+      <p class="practise">Practise it: <a href="index.html#play/handlernever">Handler never fired</a> · <a href="index.html#play/flush">Handler runs too late</a> · <a href="index.html#fix/handler-did-not-run">Interactive version</a></p>
+    </article>
+    <article class="card answer" id="always-changed">
+      <h2>Task reports changed on every run</h2>
+      <p>changed is never 0, so real changes go unnoticed, and handlers fire every time.</p>
+      <h4>Error</h4>
+      <pre><code>web-01 : ok=4    changed=1    unreachable=0    failed=0   (every run)</code></pre>
+      <h4>Why it happens</h4>
+      <ul><li>command or shell tasks without changed_when, creates or removes</li><li>shell that appends to a file</li></ul>
+      <h4>Confirm the cause</h4>
+      <pre><code>Run the playbook twice and read which task is changed</code></pre>
+      <h4>Fix</h4>
+      <ol><li>Use a module (lineinfile, copy, user) or set changed_when to what really means changed</li></ol>
+      <h4>Prevent it</h4>
+      <ul><li>CI runs every playbook twice and fails if the second run changes anything</li></ul>
+      <p class="practise">Practise it: <a href="index.html#play/shell">Changed on every run</a> · <a href="index.html#play/changedwhen">A check restarts the app every run</a> · <a href="index.html#fix/always-changed">Interactive version</a></p>
+    </article>
+    <article class="card answer" id="check-mode-skipped">
+      <h2>Check mode skips command and shell tasks</h2>
+      <p>--check --diff shows nothing for a task that will change things.</p>
+      <h4>Error</h4>
+      <pre><code>TASK [Raise max_connections] ****
+skipping: [db-01]   (with --check)</code></pre>
+      <h4>Why it happens</h4>
+      <ul><li>command and shell cannot predict their effect, so check mode skips them</li><li>Later tasks that read a skipped task's register may fail</li></ul>
+      <h4>Confirm the cause</h4>
+      <pre><code>ansible-playbook &lt;playbook&gt; --check --diff -v</code></pre>
+      <h4>Fix</h4>
+      <ol><li>Manage the state with a module (lineinfile, template) that supports check and diff</li></ol>
+      <h4>Prevent it</h4>
+      <ul><li>Prefer modules; set check_mode: false only on read-only commands</li></ul>
+      <p class="practise">Practise it: <a href="index.html#play/checkmode">Check mode shows nothing</a> · <a href="index.html#fix/check-mode-skipped">Interactive version</a></p>
+    </article>
+    <article class="card answer" id="no-vault-secrets">
+      <h2>Attempting to decrypt but no vault secrets found</h2>
+      <p>The run stops at once, or a task fails, when an encrypted file or value is read.</p>
+      <h4>Error</h4>
+      <pre><code>ERROR! Attempting to decrypt but no vault secrets found</code></pre>
+      <h4>Why it happens</h4>
+      <ul><li>No vault password was given: no -J, --vault-password-file or vault_password_file</li></ul>
+      <h4>Confirm the cause</h4>
+      <pre><code>head -1 &lt;file&gt;   # $ANSIBLE_VAULT;1.1;AES256
+ansible-config dump --only-changed</code></pre>
+      <h4>Fix</h4>
+      <ol><li>ansible-playbook &lt;playbook&gt; --vault-password-file ~/.vault_pass.txt, or -J</li></ol>
+      <h4>Prevent it</h4>
+      <ul><li>Set vault_password_file in ansible.cfg to a file outside the repository, or a script that reads your secret store</li></ul>
+      <p class="practise">Practise it: <a href="index.html#play/vault">No vault secrets found</a> · <a href="index.html#fix/no-vault-secrets">Interactive version</a></p>
+    </article>
+    <article class="card answer" id="decryption-failed">
+      <h2>Decryption failed (no vault secrets were found that could decrypt)</h2>
+      <p>Vault was given a password, and it does not open the file.</p>
+      <h4>Error</h4>
+      <pre><code>ERROR! Decryption failed (no vault secrets were found that could decrypt) on /home/ops/project/inventory/group_vars/all/vault.yml</code></pre>
+      <h4>Why it happens</h4>
+      <ul><li>The wrong password or password file</li><li>The file was rekeyed, or encrypted with another vault id</li></ul>
+      <h4>Confirm the cause</h4>
+      <pre><code>ansible-vault view &lt;file&gt; --vault-password-file &lt;file&gt;</code></pre>
+      <h4>Fix</h4>
+      <ol><li>Use the right password; with several, pass --vault-id label@file for each</li></ol>
+      <h4>Prevent it</h4>
+      <ul><li>Use vault ids per environment (dev, prod) so files say which key they need</li></ul>
+      <p class="practise">Practise it: <a href="index.html#play/vault">No vault secrets found</a> · <a href="index.html#fix/decryption-failed">Interactive version</a></p>
+    </article>
+    <article class="card answer" id="not-vault-encrypted">
+      <h2>input is not vault encrypted data</h2>
+      <p>ansible-vault view, edit or decrypt refuses a file.</p>
+      <h4>Error</h4>
+      <pre><code>ERROR! input is not vault encrypted datagroup_vars/all.yml is not a vault encrypted file for group_vars/all.yml</code></pre>
+      <h4>Why it happens</h4>
+      <ul><li>The file is plain text (perhaps decrypted and committed by mistake)</li></ul>
+      <h4>Confirm the cause</h4>
+      <pre><code>head -1 &lt;file&gt;</code></pre>
+      <h4>Fix</h4>
+      <ol><li>Encrypt it: ansible-vault encrypt &lt;file&gt;; rotate any secret that was committed in plain text</li></ol>
+      <h4>Prevent it</h4>
+      <ul><li>A pre-commit hook that rejects unencrypted files named vault*</li></ul>
+      <p class="practise">Practise it: <a href="index.html#play/plaintext">Password in plain text in Git</a> · <a href="index.html#fix/not-vault-encrypted">Interactive version</a></p>
+    </article>
+    <article class="card answer" id="secret-in-output">
+      <h2>Secret visible in task output or CI logs</h2>
+      <p>A password or token appears in -v output, a failure message or a CI log.</p>
+      <h4>Error</h4>
+      <pre><code>changed: [web-01] =&gt; {&quot;changed&quot;: true, &quot;cmd&quot;: [&quot;/opt/app/bin/app-admin&quot;, &quot;set-password&quot;, &quot;...&quot;], ...}</code></pre>
+      <h4>Why it happens</h4>
+      <ul><li>The task handles a secret without no_log: true</li><li>debug: var= on a secret</li></ul>
+      <h4>Confirm the cause</h4>
+      <pre><code>ansible-playbook &lt;playbook&gt; -v | grep -i &lt;part of the secret&gt;</code></pre>
+      <h4>Fix</h4>
+      <ol><li>Add no_log: true to every task that receives a secret; rotate the leaked secret</li></ol>
+      <h4>Prevent it</h4>
+      <ul><li>ansible-lint's no-log-password rule; review with X-ray</li></ul>
+      <p class="practise">Practise it: <a href="index.html#play/nolog">Secrets printed in the CI log</a> · <a href="index.html#fix/secret-in-output">Interactive version</a></p>
+    </article>
+    <article class="card answer" id="role-not-found">
+      <h2>the role ... was not found</h2>
+      <p>The playbook stops at load time naming a role and the directories searched.</p>
+      <h4>Error</h4>
+      <pre><code>ERROR! the role 'baseline' was not found in /home/ops/project/roles:/home/ops/project/roles:/home/ops/project</code></pre>
+      <h4>Why it happens</h4>
+      <ul><li>The role comes from another repository and was not installed</li><li>roles_path does not include where it is</li><li>A typo in the role name</li></ul>
+      <h4>Confirm the cause</h4>
+      <pre><code>cat requirements.yml
+ansible-galaxy role list</code></pre>
+      <h4>Fix</h4>
+      <ol><li>ansible-galaxy install -r requirements.yml</li><li>Fix roles_path in ansible.cfg</li></ol>
+      <h4>Prevent it</h4>
+      <ul><li>Install requirements in CI before running anything</li></ul>
+      <p class="practise">Practise it: <a href="index.html#play/rolemissing">The role was not found</a> · <a href="index.html#play/roledir">A role that does nothing</a> · <a href="index.html#fix/role-not-found">Interactive version</a></p>
+    </article>
+    <article class="card answer" id="include-removed">
+      <h2>ansible.builtin.include has been removed</h2>
+      <p>Playbooks that worked on an older ansible-core stop at load time.</p>
+      <h4>Error</h4>
+      <pre><code>ERROR! [DEPRECATED]: ansible.builtin.include has been removed. Use include_tasks or import_tasks instead. This feature was removed from ansible-core in a release after 2023-05-16. Please update your playbooks.</code></pre>
+      <h4>Why it happens</h4>
+      <ul><li>include: was removed in ansible-core 2.16</li></ul>
+      <h4>Confirm the cause</h4>
+      <pre><code>ansible --version
+grep -rn 'include:' .</code></pre>
+      <h4>Fix</h4>
+      <ol><li>Replace include: with import_tasks: (static) or include_tasks: (dynamic)</li></ol>
+      <h4>Prevent it</h4>
+      <ul><li>Pin ansible-core in CI, read the porting guide, and act on deprecation warnings</li></ul>
+      <p class="practise">Practise it: <a href="index.html#play/upgrade">include removed after an upgrade</a> · <a href="index.html#fix/include-removed">Interactive version</a></p>
+    </article>
+    <article class="card answer" id="galaxy-dependencies">
+      <h2>Failed to resolve the requested dependencies map</h2>
+      <p>ansible-galaxy collection install fails.</p>
+      <h4>Error</h4>
+      <pre><code>ERROR! Failed to resolve the requested dependencies map. Could not satisfy the following requirements:
+* community.genral:* (direct request)</code></pre>
+      <h4>Why it happens</h4>
+      <ul><li>A typo in the collection name</li><li>A version constraint no release satisfies</li><li>No network access to Galaxy or your Automation Hub</li></ul>
+      <h4>Confirm the cause</h4>
+      <pre><code>cat requirements.yml</code></pre>
+      <h4>Fix</h4>
+      <ol><li>Correct the name or version constraint</li></ol>
+      <h4>Prevent it</h4>
+      <ul><li>Pin exact versions and mirror collections for air-gapped CI</li></ul>
+      <p class="practise">Practise it: <a href="index.html#play/collection">couldn't resolve module/action</a> · <a href="index.html#fix/galaxy-dependencies">Interactive version</a></p>
+    </article>
+    <article class="card answer" id="slow-run">
+      <h2>Runs take too long on many hosts</h2>
+      <p>Runs over hundreds of hosts take most of an hour.</p>
+      <h4>Error</h4>
+      <pre><code>Playbook run took 0 days, 0 hours, 53 minutes, 20 seconds</code></pre>
+      <h4>Why it happens</h4>
+      <ul><li>forks is 5 by default, so hosts are handled five at a time</li><li>Full fact gathering on every play</li><li>No SSH pipelining or ControlPersist</li></ul>
+      <h4>Confirm the cause</h4>
+      <pre><code>ansible-config dump --only-changed
+callbacks_enabled = ansible.posix.profile_tasks to time each task</code></pre>
+      <h4>Fix</h4>
+      <ol><li>Raise forks to what the control node can handle</li><li>gather_subset: [min] or fact caching</li><li>pipelining = True in [ssh_connection]</li></ol>
+      <h4>Prevent it</h4>
+      <ul><li>Measure with profile_tasks before and after changes</li></ul>
+      <p class="practise">Practise it: <a href="index.html#play/facts">Fact gathering is slow on 500 hosts</a> · <a href="index.html#fix/slow-run">Interactive version</a></p>
+    </article>
+    <article class="card answer" id="worker-dead">
+      <h2>A worker was found in a dead state</h2>
+      <p>A big run aborts with this message, often with the control node out of memory.</p>
+      <h4>Error</h4>
+      <pre><code>ERROR! A worker was found in a dead state</code></pre>
+      <h4>Why it happens</h4>
+      <ul><li>forks set far higher than the control node's memory allows</li><li>A module or plugin crashed the worker</li></ul>
+      <h4>Confirm the cause</h4>
+      <pre><code>dmesg | grep -i 'killed process'   # on the control node</code></pre>
+      <h4>Fix</h4>
+      <ol><li>Lower forks, or give the control node more memory</li></ol>
+      <h4>Prevent it</h4>
+      <ul><li>Size forks to the control node; run large fleets from several nodes</li></ul>
+      <p class="practise">Practise it: <a href="index.html#play/facts">Fact gathering is slow on 500 hosts</a> · <a href="index.html#fix/worker-dead">Interactive version</a></p>
+    </article>
+    <article class="card answer" id="broken-pipe">
+      <h2>UNREACHABLE: client_loop: send disconnect: Broken pipe</h2>
+      <p>A long-running task dies partway with UNREACHABLE.</p>
+      <h4>Error</h4>
+      <pre><code>fatal: [db-01]: UNREACHABLE! =&gt; {&quot;changed&quot;: false, &quot;msg&quot;: &quot;Failed to connect to the host via ssh: client_loop: send disconnect: Broken pipe&quot;, &quot;unreachable&quot;: true}</code></pre>
+      <h4>Why it happens</h4>
+      <ul><li>A firewall or NAT drops idle SSH sessions</li><li>The host rebooted or ran out of memory</li></ul>
+      <h4>Confirm the cause</h4>
+      <pre><code>Time the task by hand on the host</code></pre>
+      <h4>Fix</h4>
+      <ol><li>Run it with async and poll; or set ServerAliveInterval in ssh_args</li></ol>
+      <h4>Prevent it</h4>
+      <ul><li>async for anything longer than a few minutes</li></ul>
+      <p class="practise">Practise it: <a href="index.html#play/async">Long task killed by a dropped connection</a> · <a href="index.html#fix/broken-pipe">Interactive version</a></p>
+    </article>
+    <article class="card answer" id="all-hosts-down">
+      <h2>A deploy took every host down at once</h2>
+      <p>A bad release failed its health check on all hosts at the same moment.</p>
+      <h4>Error</h4>
+      <pre><code>fatal: [web-01]: FAILED! ...
+fatal: [web-02]: FAILED! ...
+
+NO MORE HOSTS LEFT</code></pre>
+      <h4>Why it happens</h4>
+      <ul><li>The play runs each task on every host before the next task (no serial)</li><li>No rollback when a step fails</li></ul>
+      <h4>Confirm the cause</h4>
+      <pre><code>grep -n serial &lt;playbook&gt;</code></pre>
+      <h4>Fix</h4>
+      <ol><li>Roll back with -e version=&lt;previous&gt;, then add serial: 1 (or a percentage) and max_fail_percentage</li></ol>
+      <h4>Prevent it</h4>
+      <ul><li>Rolling updates with serial, health checks after restarts, and block/rescue rollbacks</li></ul>
+      <p class="practise">Practise it: <a href="index.html#play/serial">A rolling update takes every host down</a> · <a href="index.html#play/rescue">A failed deploy leaves the app down</a> · <a href="index.html#fix/all-hosts-down">Interactive version</a></p>
+    </article>
+  </main>
+  <footer class="foot">
+    <div class="wrap foot-base">
+      <p>© 2024–2026 Sandeep Komal Pothu and contributors. Open source under the <a href="https://github.com/SandeepKomal/Ansible/blob/main/LICENSE">MIT License</a>.</p>
+      <p class="foot-tm">Ansible® is a registered trademark of Red Hat, Inc. This project is independent and not affiliated with Red Hat.</p>
+    </div>
+  </footer>
+</body>
+</html>
