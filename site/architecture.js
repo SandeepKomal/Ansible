@@ -5,7 +5,7 @@
 (function () {
   const { h, rich, practise } = window.AQUI;
   const parts = Object.fromEntries(window.TRACK.architecture.components.map((c) => [c.id, c]));
-  const titles = Object.fromEntries(window.AQScenarios.SCENARIOS.map((x) => [x.id, x.title]));
+  const titles = Object.fromEntries(window.TRACK.scenarios.map((x) => [x.id, x.title]));
   const root = document.getElementById("arch");
 
   const NS = "http://www.w3.org/2000/svg";

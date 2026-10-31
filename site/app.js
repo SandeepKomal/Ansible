@@ -3,8 +3,8 @@
 
 (function () {
   const Q = window.TRACK;
-  const BANK = window.TRACK_QUIZ_BANK;
-  const SCN = window.AQScenarios.SCENARIOS;
+  // The playground and the question bank load after the first screen; data.js has their index.
+  const SCN = Q.scenarios;
   const $ = (sel) => document.querySelector(sel);
   const still = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
   const scrollToEl = (el) => el.scrollIntoView({ block: "start", behavior: still() ? "auto" : "smooth" });
@@ -52,6 +52,29 @@
     }, label);
   }
   const practise = (id) => { location.hash = "play/" + id; };
+
+  // --- features that load after the first screen -----------------------------------
+
+  // The first screen needs only data.js, search.js, engage.js and this file. The rest
+  // loads in the background once it is drawn, or at once when someone asks for it;
+  // whatever calls into one of these modules waits for need() first.
+  const LAZY = {
+    quiz: ["quiz-bank.js"], xray: ["lang.js", "xray.js"], arch: ["architecture.js"],
+    play: ["lang.js", "sim.js", "scenarios.js", "playground.js"]
+  };
+  const loading = {};
+  function load(srcs) {
+    return Promise.all(srcs.map((src) => loading[src] || (loading[src] = new Promise((resolve, reject) => {
+      const el = document.createElement("script");
+      el.src = src;
+      el.async = false; // run in the order asked for
+      el.addEventListener("load", resolve);
+      el.addEventListener("error", () => { delete loading[src]; el.remove(); reject(new Error("could not load " + src)); });
+      document.body.append(el);
+    }))));
+  }
+  const need = (...names) => load(names.flatMap((n) => LAZY[n]));
+  const needAll = () => need("quiz", "xray", "arch", "play");
   const scenarioTitle = Object.fromEntries(SCN.map((s) => [s.id, s.title]));
   const repoFile = (p) => `${Q.repo}/blob/main/${p.split("/").map(encodeURIComponent).join("/")}`;
 
@@ -64,10 +87,15 @@
   function show() {
     const [want, sub] = location.hash.slice(1).split("/");
     const tab = want === "play" ? "path" : want === "fix" ? "doctor" : tabs.includes(want) ? want : "path";
+    if (tab === "quiz" && !$("#quiz-list").firstChild) renderQuiz();
+    if (tab === "cheats" && !$("#cheat-out").firstChild) renderCheats();
+    if (tab === "xray") need("xray").catch(() => {});
+    if (tab === "arch") need("arch").catch(() => {});
+    if (want === "pg-title") need("play").catch(() => {});
     if (tab !== current) {
       const page = $("#tab-" + tab);
       page.classList.remove("tab-in");
-      void page.offsetWidth; // restart the fade
+      if (current) void page.offsetWidth; // restart the fade (the first one needs no restart)
       page.classList.add("tab-in");
     }
     current = tab;
@@ -79,7 +107,7 @@
     document.querySelectorAll(".sw").forEach((a) => (a.classList.contains(mode) ? a.setAttribute("aria-current", "true") : a.removeAttribute("aria-current")));
     document.querySelectorAll(".subnav a").forEach((a) => (a.dataset.tab === tab ? a.setAttribute("aria-current", "page") : a.removeAttribute("aria-current")));
     if (want === "fix" && sub) { const i = Q.doctor.findIndex((d) => d.id === sub); if (i >= 0) renderDoctor(i); }
-    if (want === "play" && sub && window.AQPlayground) window.AQPlayground.load(sub);
+    if (want === "play" && sub) need("play").then(() => window.AQPlayground.load(sub), () => {});
   }
   window.addEventListener("hashchange", () => {
     const before = current;
@@ -118,7 +146,7 @@
   }
 
   function heroData() {
-    const questions = Object.values(BANK).reduce((n, l) => n + l.length, 0);
+    const questions = Q.quizQuestions;
     $("#stats").replaceChildren(...[[SCN.length, "incidents to fix in the playground"], [Q.levels.length, "levels, first ping to production"], [Q.doctor.length, "errors explained, with the fix"]]
       .map(([n, l]) => h("div", null, h("b", null, String(n)), h("span", null, l))));
     const tiles = [
@@ -208,8 +236,14 @@
 
   const EXAM_SIZE = 20;
   const shuffle = (list) => { const a = [...list]; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
-  const questionsFor = (id) => (BANK[id] || []).map((item) => ({ ...item, level: id }));
+  const questionsFor = (id) => (window.TRACK_QUIZ_BANK[id] || []).map((item) => ({ ...item, level: id }));
+  // The question bank loads after the first screen; the levels list is there from the start.
+  const quizLabel = (lv) => `${lv.id} · ${lv.topic}` + (window.TRACK_QUIZ_BANK ? ` (${questionsFor(lv.id).length} questions)` : "");
+  const quizBank = () => need("quiz").then(() => {
+    for (const o of $("#quiz-level").options) { const lv = Q.levels.find((l) => l.id === o.value); if (lv) o.textContent = quizLabel(lv); }
+  });
   function renderQuiz() {
+    if (!window.TRACK_QUIZ_BANK) { quizBank().then(renderQuiz, () => {}); return; }
     const mode = $("#quiz-level").value;
     const exam = mode === "exam";
     const items = exam ? shuffle(Q.levels.flatMap((l) => questionsFor(l.id))).slice(0, EXAM_SIZE) : questionsFor(mode);
@@ -305,6 +339,7 @@
     const error = $("#xray-error");
     const fail = (msg) => { error.textContent = msg; error.hidden = false; };
     if (!text.trim()) return fail("Paste a playbook first, or choose Load an example.");
+    if (!window.AQXray) return void need("xray").then(explainPasted, () => fail("The X-ray could not load. Reload the page and try again."));
     const res = window.AQXray.explain(text);
     if (res.error) return fail(res.error);
     error.hidden = true;
@@ -383,7 +418,7 @@
         const parts = cmd.split(/(<[a-z-]+>)/).filter(Boolean).map((p) => { const m = /^<([a-z-]+)>$/.exec(p); return !m ? { text: p } : fills[m[1]] ? { text: fills[m[1]], filled: true } : { text: p, hole: true }; });
         const full = parts.map((p) => p.text).join("");
         return h("li", null, h("div", null, h("code", null, parts.map((p) => (p.filled ? h("span.filled", null, p.text) : p.hole ? h("span.hole", null, p.text) : p.text))), h("span.muted", null, what)),
-          h("div.cheat-actions", null, where ? h("button.copy", { type: "button", title: where === "any" ? "Run it in the playground" : `Run it in the scenario "${scenarioTitle[where]}"`, onclick: () => { history.replaceState(null, "", "#path"); show(); window.AQPlayground.prefill(cmd, where); } }, "Try")
+          h("div.cheat-actions", null, where ? h("button.copy", { type: "button", title: where === "any" ? "Run it in the playground" : `Run it in the scenario "${scenarioTitle[where]}"`, onclick: () => { history.replaceState(null, "", "#path"); show(); need("play").then(() => window.AQPlayground.prefill(cmd, where), () => {}); } }, "Try")
             : h("a.copy.lab", { href: Q.repo + "#quick-start", title: "Needs a real machine: run it in the course lab" }, "Lab"), copyButton(full)));
       })));
     }
@@ -438,7 +473,7 @@
     if (!items.length) paletteList.append(h("li.muted", null, "Nothing matches. Try a word such as vault, handler or sudo."));
     paletteInput.setAttribute("aria-activedescendant", items.length ? "pal-" + active : "");
   }
-  function openPalette() { if (palette.open) return; paletteInput.value = ""; active = 0; renderPalette(); palette.showModal(); paletteInput.focus(); }
+  function openPalette() { if (palette.open) return; needAll().catch(() => {}); paletteInput.value = ""; active = 0; renderPalette(); palette.showModal(); paletteInput.focus(); }
   function choose(i) { const a = items[i]; if (!a) return; palette.close(); a.run(); }
   paletteInput.addEventListener("input", () => { active = 0; renderPalette(); });
   paletteInput.addEventListener("keydown", (e) => {
@@ -462,7 +497,7 @@
   // --- init -------------------------------------------------------------------------
 
   $("#quiz-level").append(h("option", { value: "exam" }, `Exam: ${EXAM_SIZE} random questions from every level`));
-  for (const lv of Q.levels) $("#quiz-level").append(h("option", { value: lv.id }, `${lv.id} · ${lv.topic} (${questionsFor(lv.id).length} questions)`));
+  for (const lv of Q.levels) $("#quiz-level").append(h("option", { value: lv.id }, quizLabel(lv)));
   $("#quiz-level").value = "00";
   $("#quiz-level").addEventListener("change", renderQuiz);
   $("#quiz-again").addEventListener("click", () => { renderQuiz(); $("#quiz-list").scrollIntoView({ block: "start" }); });
@@ -484,18 +519,24 @@
   $("#forget").addEventListener("click", forgetEverything);
   $("#cheat-fill-box").open = matchMedia("(min-width: 721px)").matches || Object.keys(fills).length > 0;
 
-  // Shared with playground.js and architecture.js, which load after this script.
+  // Shared with engage.js, playground.js and architecture.js.
   window.AQUI = { h, rich, practise, copyLink, store };
 
+  // The first screen, in one pass, so the hero, stats, scoreboard and path appear together.
   signature();
   heroData();
   renderGuides();
+  window.AQEngage.render();
   renderFlow();
-  renderQuiz();
+  renderPath();
   renderDoctorList();
   renderFill();
-  renderCheats();
   show();
-  // The path's lab check comes from engage.js, and deep links into the playground need it loaded first.
-  window.addEventListener("DOMContentLoaded", () => { renderPath(); if (/^#play\//.test(location.hash)) show(); });
+
+  // Everything else loads while the reader looks at the first screen.
+  (window.requestIdleCallback || ((fn) => setTimeout(fn, 200)))(() => {
+    if (!$("#cheat-out").firstChild) renderCheats();
+    needAll().catch(() => {});
+    quizBank().then(() => { if (!$("#quiz-list").firstChild) renderQuiz(); }, () => {});
+  });
 })();

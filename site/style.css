@@ -707,3 +707,14 @@ kbd { font-size: .72rem; line-height: 1; color: var(--muted); background: var(--
 .brand-hub:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
 @media (prefers-reduced-motion: reduce) { .brand-back { transition: none; } }
+
+/* The playground loads just after the first screen: keep its room so nothing below it moves. */
+.pg-scenarios:empty { min-height: 800px; }
+.pg-story:empty { min-height: 133px; }
+.pg-side:has(.pg-map:empty) { min-height: 477px; }
+.pg-head:has(.pg-goal:empty) { min-height: 255px; }
+@media (max-width: 1199px) { .pg-scenarios:empty { min-height: 884px; } .pg-story:empty { min-height: 158px; } .pg-side:has(.pg-map:empty) { min-height: 517px; } .pg-head:has(.pg-goal:empty) { min-height: 246px; } }
+@media (max-width: 999px) { .pg-scenarios:empty { min-height: 1044px; } }
+@media (max-width: 860px) { .pg-side:has(.pg-map:empty) { min-height: 438px; } .pg-head:has(.pg-goal:empty) { min-height: 269px; } }
+@media (max-width: 720px) { .pg-scenarios:empty { min-height: 38px; } .pg-side:has(.pg-map:empty) { min-height: 477px; } .pg-head:has(.pg-goal:empty) { min-height: 290px; } }
+@media (max-width: 599px) { .pg-story:empty { min-height: 216px; } .pg-side:has(.pg-map:empty) { min-height: 517px; } .pg-head:has(.pg-goal:empty) { min-height: 341px; } }
