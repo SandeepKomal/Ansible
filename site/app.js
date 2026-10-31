@@ -123,7 +123,7 @@
       ["Playbook X-ray", "Every task, explained.", "Modules, conditions, loops, and the risky ones flagged.", "wide", "#xray"],
       ["Troubleshoot", "Read the error, fix the cause.", "Paste what Ansible printed.", "", "#doctor"],
       ["Quiz", "Roles, vars, precedence.", `${questions} questions with the reasoning.`, "", "#quiz"],
-      ["Architecture", "Control node to managed hosts.", "What runs where, and how it fails.", "", "#arch"]
+      ["How a play runs", "Control node to managed hosts.", "What runs where, and how it fails.", "", "#arch"]
     ];
     $("#bento").replaceChildren(...tiles.map(([k, title, text, size, href]) => h("a.tile" + (size ? "." + size : ""), { href }, h("div", null, h("div.k", null, k), h("h3", null, title)), h("p", null, text))));
   }
@@ -416,7 +416,7 @@
     { label: "Playbook X-ray", kind: "Section", run: go("xray") },
     { label: "Troubleshooting reference: paste an error", kind: "Section", run: go("doctor", () => $("#doctor-q").focus()) },
     { label: "Cheat sheet", kind: "Section", run: go("cheats", () => $("#cheat-q").focus()) },
-    { label: "Ansible architecture", kind: "Section", run: go("arch") },
+    { label: "How a play runs", kind: "Section", run: go("arch") },
     ...Q.levels.map((lv) => ({ label: `${lv.id} · ${lv.title}`, hint: lv.topic, kind: "Level", run: go("path", () => { const el = document.getElementById("level-" + lv.id); el.open = true; scrollToEl(el); }) })),
     ...Q.levels.map((lv) => ({ label: `Quiz: ${lv.id} · ${lv.topic}`, kind: "Quiz", run: go("quiz", () => { $("#quiz-level").value = lv.id; renderQuiz(); }) })),
     ...SCN.map((s) => ({ label: `Playground: ${s.title}`, hint: s.group + " " + s.error, kind: "Practice", run: () => { location.hash = "play/" + s.id; } })),
