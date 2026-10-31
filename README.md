@@ -217,7 +217,7 @@ Please report a suspected vulnerability privately, as described in [SECURITY.md]
 
 The learning site is static HTML that runs in your browser: no accounts, cookies, trackers or database, and no third-party requests. Your progress stays in your browser unless you download it as a file. The site is free and hosted on GitHub Pages.
 
-The playbooks in this repository run against hosts you provide; any cost comes from those hosts, not from this project.
+The playbooks in this repository run against hosts you provide; any cost comes from those hosts, not from this project. See [PRIVACY.md](PRIVACY.md) for the full privacy policy.
 
 ## License and trademarks
 
