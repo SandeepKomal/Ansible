@@ -718,3 +718,5 @@ kbd { font-size: .72rem; line-height: 1; color: var(--muted); background: var(--
 @media (max-width: 860px) { .pg-side:has(.pg-map:empty) { min-height: 438px; } .pg-head:has(.pg-goal:empty) { min-height: 269px; } }
 @media (max-width: 720px) { .pg-scenarios:empty { min-height: 38px; } .pg-side:has(.pg-map:empty) { min-height: 477px; } .pg-head:has(.pg-goal:empty) { min-height: 290px; } }
 @media (max-width: 599px) { .pg-story:empty { min-height: 216px; } .pg-side:has(.pg-map:empty) { min-height: 517px; } .pg-head:has(.pg-goal:empty) { min-height: 341px; } }
+/* Narrow phones: the logo stands for DevOps Nimbus so the header keeps one row. */
+@media (max-width: 440px) { .brand-hub > span:not([class]) { display: none; } }
