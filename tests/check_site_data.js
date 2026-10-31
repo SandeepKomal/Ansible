@@ -13,6 +13,12 @@ require(path.join(root, "site/quiz-bank.js"));
 const bank = window.TRACK_QUIZ_BANK;
 const scenarioIds = new Set(SCN.map((s) => s.id));
 
+// The first screen counts and picks scenarios, and counts questions, from data.js before
+// the simulator and the question bank load; both must match exactly.
+assert.deepStrictEqual(Q.scenarios, SCN.map(({ id, title, level, group, story, error }) => ({ id, title, level, group, story, error })),
+  "TRACK.scenarios in site/data.js must match the playground's scenarios (id, title, level, group, story, error, in order)");
+assert.strictEqual(Q.quizQuestions, Object.values(bank).reduce((n, l) => n + l.length, 0), "TRACK.quizQuestions in site/data.js must match the question bank");
+
 assert.deepStrictEqual(Q.levels.map((l) => l.id), Q.levels.map((l, i) => String(i).padStart(2, "0")), "levels are numbered in order");
 for (const lv of Q.levels) {
   for (const k of ["title", "topic", "stage"]) assert.ok(lv[k], `level ${lv.id}: ${k}`);
