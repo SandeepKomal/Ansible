@@ -1,31 +1,41 @@
-<div align="center">
+# DevOps Nimbus Ansible
 
-# Ansible Automation Toolkit
+**Ansible, zero to on-call.** Practical playbooks and a free learning site with a simulated fleet, 43 incidents to fix and a 14-level path, for DevOps engineers learning to automate Linux hosts.
 
-**Practical playbooks, installation guides, and infrastructure automation examples for DevOps engineers.**
-
-[![Ansible](https://img.shields.io/badge/Ansible-automation-EE0000?logo=ansible&logoColor=white)](https://www.ansible.com/)
+[![Learning site](https://img.shields.io/badge/learn-DevOps%20Nimbus-1d1d1f)](https://sandeepkomal.github.io/Ansible/)
+[![CI](https://github.com/SandeepKomal/Ansible/actions/workflows/ci.yml/badge.svg)](https://github.com/SandeepKomal/Ansible/actions/workflows/ci.yml)
 [![Validation](https://github.com/SandeepKomal/Ansible/actions/workflows/ansible-validation.yml/badge.svg)](https://github.com/SandeepKomal/Ansible/actions/workflows/ansible-validation.yml)
+[![Pages](https://github.com/SandeepKomal/Ansible/actions/workflows/pages.yml/badge.svg)](https://github.com/SandeepKomal/Ansible/actions/workflows/pages.yml)
+[![Ansible](https://img.shields.io/badge/Ansible-automation-EE0000?logo=ansible&logoColor=white)](https://docs.ansible.com/)
+[![YAML](https://img.shields.io/badge/YAML-configuration-CB171E?logo=yaml&logoColor=white)](https://yaml.org/)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
+![No trackers](https://img.shields.io/badge/site-no%20trackers%20%C2%B7%20no%20cookies-2ea44f)
+[![Contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen)](CONTRIBUTING.md)
+![Last commit](https://img.shields.io/github/last-commit/SandeepKomal/Ansible)
 [![GitHub stars](https://img.shields.io/github/stars/SandeepKomal/Ansible?style=social)](https://github.com/SandeepKomal/Ansible/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/SandeepKomal/Ansible?style=social)](https://github.com/SandeepKomal/Ansible/network/members)
-[![YAML](https://img.shields.io/badge/configuration-YAML-CB171E?logo=yaml&logoColor=white)](https://yaml.org/)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg)](CONTRIBUTING.md)
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/SandeepKomal/Ansible)
 
-</div>
+**[Open the learning site](https://sandeepkomal.github.io/Ansible/)** · [Troubleshoot an error](https://sandeepkomal.github.io/Ansible/#doctor) · [Every error on one page](https://sandeepkomal.github.io/Ansible/problems.html) · [All DevOps Nimbus tracks](https://sandeepkomal.github.io/devops-nimbus/)
 
-A hands-on collection of Ansible examples for configuring Linux hosts and installing common DevOps tools. The repository is designed as a learning reference: start with the basics, test safely on a host you control, then adapt the playbooks for your environment.
+## Contents
 
-> **Safety first:** review every playbook before running it. Installation tasks can change packages, services, permissions, and system configuration on target hosts.
+- [Learn it in your browser](#learn-it-in-your-browser)
+- [What's in this repository](#whats-in-this-repository)
+- [Quick start](#quick-start)
+- [Example commands](#example-commands)
+- [Learning roadmap](#learning-roadmap)
+- [Recommended practices](#recommended-practices)
+- [References](#references)
+- [Repository layout](#repository-layout)
+- [Troubleshooting](#troubleshooting)
+- [Contributing](#contributing)
+- [Security](#security)
+- [Privacy and cost](#privacy-and-cost)
+- [License and trademarks](#license-and-trademarks)
+- [Author and contributors](#author-and-contributors)
 
-## What you’ll find
-
-- **Getting started:** install Ansible, define an inventory, verify SSH connectivity, and run your first playbook.
-- **Tool installation playbooks:** examples for Git, Java 17, Docker, AWS CLI, Kustomize, Trivy, and Maven.
-- **Reusable automation patterns:** privilege escalation, tags, templates, idempotent tasks, validation, and service management.
-- **Operational guidance:** linting, troubleshooting, secrets handling, and contribution instructions.
-
-## DevOps Nimbus Ansible: zero to on-call, in your browser
+## Learn it in your browser
 
 The [DevOps Nimbus Ansible site](https://sandeepkomal.github.io/Ansible/) turns this repository into a free course:
 
@@ -34,24 +44,24 @@ The [DevOps Nimbus Ansible site](https://sandeepkomal.github.io/Ansible/) turns 
 - **Playbook X-ray:** paste a playbook to get every line explained and risky patterns flagged.
 - **Troubleshoot:** paste an Ansible error to get its cause, how to confirm it, the fix and how to prevent it. A plain copy is in [site/problems.html](site/problems.html).
 - **Quiz, cheat sheet and architecture** pages.
+- **Scoreboard:** a score with ranks, a skill radar, learning uptime and on-call shifts against the clock; download your progress as a file and load it back on another browser.
 
 It is static HTML with no trackers or third-party requests; progress stays in your browser. To run it locally, serve the `site` folder (for example `python3 -m http.server -d site`) and run the tests with `node tests/check_playground.js` and the other files in `tests/`. After changing the troubleshooting data, regenerate the static page with `node tools/build_problems.js`.
 
-## Repository map
+## What's in this repository
 
-| Path | Purpose |
-| --- | --- |
-| [docs/](docs/) | Installation, concepts, security, and troubleshooting guides |
-| [playbooks/](playbooks/) | Starter examples and maintained playbooks |
-| [inventory/](inventory/) | Safe example inventory; replace placeholders with your own hosts |
-| [ansible.cfg](ansible.cfg) | Project-local Ansible defaults |
-| [requirements.yml](requirements.yml) | Optional Ansible collection dependencies |
-| [yaml files/](yaml%20files/) | Tool-installation examples retained for compatibility |
-| [site/](site/) | The DevOps Nimbus Ansible learning site (GitHub Pages) |
-| [tests/](tests/) | Tests for the site: playground scenarios, fuzzer, X-ray, data |
-| [tools/](tools/) | Generates site/problems.html from the troubleshooting data |
-| [CONTRIBUTING.md](CONTRIBUTING.md) | How to contribute |
-| [SECURITY.md](SECURITY.md) | Responsible security reporting |
+**Practical playbooks, installation guides, and infrastructure automation examples for DevOps engineers.**
+
+A hands-on collection of Ansible examples for configuring Linux hosts and installing common DevOps tools. The repository is designed as a learning reference: start with the basics, test safely on a host you control, then adapt the playbooks for your environment.
+
+> **Safety first:** review every playbook before running it. Installation tasks can change packages, services, permissions, and system configuration on target hosts.
+
+### What you’ll find
+
+- **Getting started:** install Ansible, define an inventory, verify SSH connectivity, and run your first playbook.
+- **Tool installation playbooks:** examples for Git, Java 17, Docker, AWS CLI, Kustomize, Trivy, and Maven.
+- **Reusable automation patterns:** privilege escalation, tags, templates, idempotent tasks, validation, and service management.
+- **Operational guidance:** linting, troubleshooting, secrets handling, and contribution instructions.
 
 ## Quick start
 
@@ -149,10 +159,6 @@ Detailed guides are in [docs/](docs/).
 - Pin and periodically review third-party tool versions; verify release checksums/signatures where publishers provide them.
 - Test against disposable VMs or staging hosts before using production systems.
 
-## Contributing
-
-Contributions that improve correctness, clarity, security, test coverage, or practical examples are welcome. Please read [CONTRIBUTING.md](CONTRIBUTING.md), and open an issue for substantial changes.
-
 ## References
 
 - [Official Ansible documentation](https://docs.ansible.com/)
@@ -161,10 +167,68 @@ Contributions that improve correctness, clarity, security, test coverage, or pra
 - [Ansible best practices](https://docs.ansible.com/projects/ansible/latest/tips_tricks/ansible_tips_tricks.html)
 - [Ansible Lint](https://ansible.readthedocs.io/projects/lint/)
 
-## Support the project
+## Repository layout
+
+| Path | Purpose |
+| --- | --- |
+| [docs/](docs/) | Installation, concepts, security, and troubleshooting guides |
+| [playbooks/](playbooks/) | Starter examples and maintained playbooks |
+| [inventory/](inventory/) | Safe example inventory; replace placeholders with your own hosts |
+| [ansible.cfg](ansible.cfg) | Project-local Ansible defaults |
+| [requirements.yml](requirements.yml) | Optional Ansible collection dependencies |
+| [yaml files/](yaml%20files/) | Tool-installation examples retained for compatibility |
+| [site/](site/) | The DevOps Nimbus Ansible learning site (GitHub Pages) |
+| [tests/](tests/) | Tests for the site: playground scenarios, fuzzer, X-ray, data |
+| [tools/](tools/) | Generates site/problems.html from the troubleshooting data |
+| [CONTRIBUTING.md](CONTRIBUTING.md) | How to contribute |
+| [SECURITY.md](SECURITY.md) | Responsible security reporting |
+
+## Troubleshooting
+
+- Paste an Ansible error into [Troubleshoot](https://sandeepkomal.github.io/Ansible/#doctor) on the learning site for its cause, how to confirm it, the fix and how to prevent it.
+- Every error is also on one plain page: [problems.html](https://sandeepkomal.github.io/Ansible/problems.html) (source: [site/problems.html](site/problems.html)).
+- Setup and connection problems are covered in [docs/GETTING_STARTED.md](docs/GETTING_STARTED.md).
+
+## Contributing
+
+Contributions that improve correctness, clarity, security, test coverage, or practical examples are welcome. Please read [CONTRIBUTING.md](CONTRIBUTING.md), and open an issue for substantial changes.
+
+Run the same checks as CI before opening a pull request:
+
+```bash
+ansible-playbook -i localhost, -c local playbooks/hello.yml --syntax-check
+ansible-lint playbooks/ "yaml files/"
+for f in site/*.js tools/*.js tests/*.js; do node --check "$f"; done
+node tests/check_playground.js
+node tests/fuzz_playground.js 20000
+node tests/check_xray.js
+node tests/check_site_data.js
+```
+
+### Support the project
 
 If these examples help you learn or automate a task, consider starring the repository, opening an issue with a reproducible improvement, or contributing a tested playbook. Genuine, useful contributions help the project grow.
 
----
+## Security
 
-Maintained by [SandeepKomal](https://github.com/SandeepKomal).
+Please report a suspected vulnerability privately, as described in [SECURITY.md](SECURITY.md), rather than in a public issue. Every pull request runs the Ansible syntax check and `ansible-lint` ([Validation](.github/workflows/ansible-validation.yml)) and the site tests ([CI](.github/workflows/ci.yml)); every action is pinned to a full commit SHA.
+
+## Privacy and cost
+
+The learning site is static HTML that runs in your browser: no accounts, cookies, trackers or database, and no third-party requests. Your progress stays in your browser unless you download it as a file. The site is free and hosted on GitHub Pages.
+
+The playbooks in this repository run against hosts you provide; any cost comes from those hosts, not from this project.
+
+## License and trademarks
+
+Released under the [MIT License](LICENSE).
+
+Ansible® is a registered trademark of Red Hat, Inc. This project is independent and not affiliated with Red Hat.
+
+## Author and contributors
+
+**Sandeep Komal** · [github.com/SandeepKomal](https://github.com/SandeepKomal)
+
+Built and maintained with [DevopsNimbus](https://github.com/DevopsNimbus). See everyone who has contributed in the [contributors graph](https://github.com/SandeepKomal/Ansible/graphs/contributors).
+
+If this helped you, a ⭐ on the repository helps others find it.
