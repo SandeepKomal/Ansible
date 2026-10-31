@@ -34,3 +34,7 @@ Please include:
 - The target operating system/distribution and version, if relevant.
 - Commands used to validate the change.
 - Any operational impact or prerequisites.
+
+## Personal data
+
+Never include real personal data in issues, pull requests, examples, logs or tests: no Aadhaar, PAN, phone numbers, personal emails, addresses, bank details or customer records. Use made-up values and reserved domains such as `example.com`. See [PRIVACY.md](PRIVACY.md).
