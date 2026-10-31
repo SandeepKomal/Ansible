@@ -23,12 +23,18 @@
         Ansible Quest
       </a>
       <nav aria-label="Sections">
-        <a href="#path" data-tab="path">Path</a>
-        <a href="#quiz" data-tab="quiz">Quiz</a>
-        <a href="#xray" data-tab="xray">Playbook X-ray</a>
-        <a href="#doctor" data-tab="doctor">Troubleshoot</a>
-        <a href="#cheats" data-tab="cheats">Cheat sheet</a>
-        <a href="#arch" data-tab="arch">How a play runs</a>
+        <div class="mode learn" role="group" aria-label="Learn">
+          <span class="mode-k">Learn</span>
+          <a href="#path" data-tab="path">Path</a>
+          <a href="#quiz" data-tab="quiz">Quiz</a>
+          <a href="#xray" data-tab="xray">Playbook X-ray</a>
+          <a href="#arch" data-tab="arch">How a play runs</a>
+        </div>
+        <div class="mode fix" role="group" aria-label="Fix">
+          <span class="mode-k">Fix</span>
+          <a href="#doctor" data-tab="doctor">Troubleshoot</a>
+          <a href="#cheats" data-tab="cheats">Cheat sheet</a>
+        </div>
       </nav>
       <button type="button" class="kbd-btn" id="palette-open" aria-label="Search the site (Ctrl+K)"><span>Search</span><kbd id="palette-key">Ctrl K</kbd></button>
       <a class="gh" id="gh-link" href="#">GitHub</a>
@@ -42,9 +48,19 @@
           <p class="eyebrow">Ansible Quest</p>
           <h1>Configure a hundred servers<br>like one.</h1>
           <p class="sub">Inventories, roles and handlers, with plays that show exactly what changed and why. Learn by fixing real incidents in your browser.</p>
-          <div class="ctas">
-            <a class="pill primary" href="#path-title" id="cta-path">Start the path</a>
-            <a class="link-more" href="#pg-title" id="cta-try">Try a scenario</a>
+          <div class="doors">
+            <div class="door learn">
+              <p class="door-k">Learning Ansible?</p>
+              <h2>Start from zero, step by step.</h2>
+              <p>Levels in order, each with a hands-on incident to fix in your browser.</p>
+              <div class="ctas"><a class="pill primary" href="#path-title" id="cta-path">Start the path</a><a class="link-more" href="#pg-title" id="cta-try">Try a scenario</a></div>
+            </div>
+            <div class="door fix">
+              <p class="door-k">Something broken right now?</p>
+              <h2>Paste the error, get the fix.</h2>
+              <p>The cause, the commands to confirm it and the fix, for every common Ansible error.</p>
+              <div class="door-search"><input id="door-q" type="search" placeholder="Paste an error, e.g. Missing sudo password" aria-label="Paste an error" autocomplete="off"><button type="button" class="pill" id="door-go">Find the fix</button></div>
+            </div>
           </div>
           <div class="stage" id="stage" aria-label="A play across eight hosts"></div>
           <div class="stats" id="stats"></div>
@@ -202,8 +218,9 @@ ansible-playbook playbooks/hello.yml</code></pre>
     </section>
 
     <section id="tab-doctor" class="tab wrap" hidden>
-      <h2>Troubleshooting reference</h2>
-      <p class="lede">Paste the error Ansible printed, or describe the symptom. Each answer gives the exact error, the cause, how to confirm it, the fix, how to prevent it, and a scenario to practise.</p>
+      <p class="mode-banner"><strong>Fix mode.</strong> For when something is broken right now. Learning Ansible instead? <a href="#path">Start the path</a>.</p>
+      <h2>Stuck on an error?</h2>
+      <p class="lede">Paste the error Ansible printed, or describe the symptom. Each answer explains why it happens, how to confirm it and how to fix and prevent it, then gives you a safe scenario to break and fix it yourself, so you recognise it next time.</p>
       <div class="guide-slot" data-guide="doctor"></div>
       <label class="field wide-field">Search errors and symptoms
         <textarea id="doctor-q" rows="2" placeholder="Paste an error, e.g. fatal: [web-01]: FAILED! => {&quot;msg&quot;: &quot;Missing sudo password&quot;}" spellcheck="false"></textarea>

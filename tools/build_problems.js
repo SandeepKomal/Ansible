@@ -22,6 +22,7 @@ function render({ Q, SCN }) {
   const toc = Q.doctorGroups.map(([group, ids]) => `      <h3>${esc(group)}</h3>\n      <ul class="toc">\n${ids.map((id) => `        <li><a href="#${id}">${esc(byId[id].title)}</a></li>`).join("\n")}\n      </ul>`).join("\n");
   const entries = Q.doctorGroups.flatMap(([, ids]) => ids).map((id) => {
     const d = byId[id];
+    const lv = Q.levels.find((l) => l.id === d.level);
     return `    <article class="card answer" id="${d.id}">
       <h2>${esc(d.title)}</h2>
       <p>${rich(d.symptom)}</p>
@@ -35,7 +36,7 @@ function render({ Q, SCN }) {
       <ol>${d.fix.map((c) => `<li>${rich(c)}</li>`).join("")}</ol>
       <h4>Prevent it</h4>
       <ul>${d.prevent.map((c) => `<li>${rich(c)}</li>`).join("")}</ul>
-      <p class="practise">Practise it: ${d.scenarios.map((s) => `<a href="index.html#play/${s}">${esc(title[s])}</a>`).join(" · ")} · <a href="index.html#fix/${d.id}">Interactive version</a></p>
+      <p class="practise"><strong>Now learn it:</strong> break and fix it yourself in ${d.scenarios.map((s) => `<a href="index.html#play/${s}">${esc(title[s])}</a>`).join(" · ")}, then take <a href="index.html#path">Level ${lv.id} · ${esc(lv.title)}</a>. <a href="index.html#fix/${d.id}">Interactive version</a></p>
     </article>`;
   }).join("\n");
   return `<!doctype html>
@@ -63,7 +64,7 @@ function render({ Q, SCN }) {
   </header>
   <main class="wrap">
     <h1>Ansible errors and how to fix them</h1>
-    <p class="lede">${Q.doctor.length} errors and symptoms Ansible users meet, each with the exact message, why it happens, how to confirm the cause, the fix, how to prevent it, and a scenario to practise it in the browser. Generated from the same data as the <a href="index.html#doctor">interactive reference</a>.</p>
+    <p class="lede">${Q.doctor.length} errors and symptoms Ansible users meet, each with the exact message, why it happens, how to confirm the cause, the fix and how to prevent it. Then learn it for good: break and fix each one yourself in the <a href="index.html#pg-title">browser playground</a>. Generated from the same data as the <a href="index.html#doctor">interactive reference</a>.</p>
     <nav aria-label="Contents">
 ${toc}
     </nav>
