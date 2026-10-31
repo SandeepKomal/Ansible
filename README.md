@@ -25,9 +25,9 @@ A hands-on collection of Ansible examples for configuring Linux hosts and instal
 - **Reusable automation patterns:** privilege escalation, tags, templates, idempotent tasks, validation, and service management.
 - **Operational guidance:** linting, troubleshooting, secrets handling, and contribution instructions.
 
-## Ansible Quest: learn in your browser
+## DevOps Nimbus Ansible: zero to on-call, in your browser
 
-The [Ansible Quest site](https://sandeepkomal.github.io/Ansible/) turns this repository into a free course:
+The [DevOps Nimbus Ansible site](https://sandeepkomal.github.io/Ansible/) turns this repository into a free course:
 
 - **Playground:** 43 real incidents (UNREACHABLE hosts, missing sudo passwords, undefined variables, Vault, handlers that never fire, rolling updates that take every host down) on a simulated fleet, with real `ansible` and `ansible-playbook` output.
 - **Path:** 14 levels from the first ping to production, each with a lab that uses the playbooks in this repository.
@@ -47,7 +47,7 @@ It is static HTML with no trackers or third-party requests; progress stays in yo
 | [ansible.cfg](ansible.cfg) | Project-local Ansible defaults |
 | [requirements.yml](requirements.yml) | Optional Ansible collection dependencies |
 | [yaml files/](yaml%20files/) | Tool-installation examples retained for compatibility |
-| [site/](site/) | The Ansible Quest learning site (GitHub Pages) |
+| [site/](site/) | The DevOps Nimbus Ansible learning site (GitHub Pages) |
 | [tests/](tests/) | Tests for the site: playground scenarios, fuzzer, X-ray, data |
 | [tools/](tools/) | Generates site/problems.html from the troubleshooting data |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | How to contribute |

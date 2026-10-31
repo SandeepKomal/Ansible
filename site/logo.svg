@@ -1,6 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Ansible Quest">
-  <title>Ansible Quest</title>
-  <rect x="2" y="2" width="60" height="60" rx="16" fill="#c4263f"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Ansible">
+  <title>Ansible</title>
+  <rect x="2" y="2" width="60" height="60" rx="16" fill="#e32320"/>
   <path d="M20 32h8M28 32l12-12M28 32h12M28 32l12 12" stroke="#fff" stroke-width="3.2" stroke-linecap="round" fill="none"/>
   <circle cx="18" cy="32" r="6" fill="#fff"/>
   <circle cx="44" cy="18" r="4.5" fill="#fff"/>
