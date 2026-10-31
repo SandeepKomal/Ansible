@@ -10,7 +10,7 @@ const root = path.resolve(__dirname, "..");
 const { render, load } = require(path.join(root, "tools/build_problems.js"));
 const { Q, SCN } = load();
 require(path.join(root, "site/quiz-bank.js"));
-const bank = window.QUEST_QUIZ_BANK;
+const bank = window.TRACK_QUIZ_BANK;
 const scenarioIds = new Set(SCN.map((s) => s.id));
 
 assert.deepStrictEqual(Q.levels.map((l) => l.id), Q.levels.map((l, i) => String(i).padStart(2, "0")), "levels are numbered in order");

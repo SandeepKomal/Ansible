@@ -5,7 +5,7 @@
 
 (function () {
   const { h, copyLink, store } = window.AQUI;
-  const Q = window.QUEST;
+  const Q = window.TRACK;
   const { Sim } = window.AQSim;
   const { SCENARIOS, GROUPS } = window.AQScenarios;
   const $ = (sel) => document.querySelector(sel);
@@ -157,6 +157,7 @@
     if (solved || !scenario.won(sim)) return;
     solved = true;
     markSolved(scenario.id);
+    document.dispatchEvent(new CustomEvent("dq:solved", { detail: scenario.id }));
     renderPicker();
     const b = $(`.pg-scn[data-id="${scenario.id}"]`);
     if (b) b.classList.add("just-solved");
@@ -287,6 +288,7 @@
 
   const reveal = () => { $("#pg-term").scrollIntoView({ block: "center", behavior: reduceMotion() ? "auto" : "smooth" }); input.focus({ preventScroll: true }); };
   window.AQPlayground = {
+    scenarios: SCENARIOS.map((s) => ({ id: s.id, title: s.title, story: s.story, level: s.level })),
     load: (id) => { load(id); reveal(); },
     // From the cheat sheet: open the scenario a command needs, fill its
     // blanks with that scenario's names, and run it.

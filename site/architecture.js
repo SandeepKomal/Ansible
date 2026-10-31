@@ -4,7 +4,7 @@
 
 (function () {
   const { h, rich, practise } = window.AQUI;
-  const parts = Object.fromEntries(window.QUEST.architecture.components.map((c) => [c.id, c]));
+  const parts = Object.fromEntries(window.TRACK.architecture.components.map((c) => [c.id, c]));
   const titles = Object.fromEntries(window.AQScenarios.SCENARIOS.map((x) => [x.id, x.title]));
   const root = document.getElementById("arch");
 

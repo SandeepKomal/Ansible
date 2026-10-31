@@ -1,7 +1,7 @@
 // Quiz questions for every level: q, four options, the right answer's index, and why.
 "use strict";
 
-window.QUEST_QUIZ_BANK = {
+window.TRACK_QUIZ_BANK = {
   "00": [
     { q: "What must a Linux managed host have for most Ansible modules to run?", options: ["An Ansible agent service", "SSH access and Python", "A copy of the playbook", "Docker"], answer: 1,
       why: "Ansible is agentless: it logs in over SSH and runs modules with the host's Python. Only `raw` works without Python." },

@@ -592,7 +592,7 @@ assert.match(run(sim, "ansible-playbook site.yml"), /ERROR! no module\/action de
 
 global.window = global.window || {};
 require(path.resolve(__dirname, "../site/data.js"));
-const Q = window.QUEST;
+const Q = window.TRACK;
 const fill = (id, cmd) => cmd.replace(/<([a-z-]+)>/g, (m, k) => (Q.fills[id] && Q.fills[id][k]) || Q.fills.any[k] || m);
 const runsIn = (id, cmd) => {
   const s = fresh(id);

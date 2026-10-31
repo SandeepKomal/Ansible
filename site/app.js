@@ -1,9 +1,9 @@
-// Ansible Quest site. No dependencies, no network requests.
+// DevOps Nimbus Ansible site. No dependencies, no network requests.
 "use strict";
 
 (function () {
-  const Q = window.QUEST;
-  const BANK = window.QUEST_QUIZ_BANK;
+  const Q = window.TRACK;
+  const BANK = window.TRACK_QUIZ_BANK;
   const SCN = window.AQScenarios.SCENARIOS;
   const $ = (sel) => document.querySelector(sel);
   const still = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -55,7 +55,6 @@
   const scenarioTitle = Object.fromEntries(SCN.map((s) => [s.id, s.title]));
   const repoFile = (p) => `${Q.repo}/blob/main/${p.split("/").map(encodeURIComponent).join("/")}`;
 
-  $("#gh-link").href = Q.repo;
   document.querySelectorAll("[data-repo]").forEach((a) => { a.href = Q.repo + a.dataset.repo; });
 
   // --- tabs and deep links -------------------------------------------------------
@@ -147,13 +146,13 @@
       const check = h("input", {
         type: "checkbox", checked: isDone, "aria-label": `Mark level ${lv.id} complete`,
         onclick: (e) => e.stopPropagation(),
-        onchange: (e) => { if (e.target.checked) done.add(lv.id); else done.delete(lv.id); store.set("done", [...done]); renderPath(); }
+        onchange: (e) => { if (e.target.checked) done.add(lv.id); else done.delete(lv.id); store.set("done", [...done]); if (e.target.checked) window.AQEngage.active(); renderPath(); }
       });
-      list.append(h("li", null, h("details.level" + (isDone ? ".done" : ""), { id: "level-" + lv.id },
+      list.append(h("li", { id: "lv-" + lv.id }, h("details.level" + (isDone ? ".done" : ""), { id: "level-" + lv.id },
         h("summary", null, check, h("span.num", null, lv.id), h("span.what", null, h("strong", null, lv.title), h("span.topic", null, lv.topic)), h("span.chev", { "aria-hidden": "true" }, "›")),
         h("div.level-body", null,
           h("div", null, h("h4", null, "What you learn"), h("ul", null, lv.learn.map((t) => h("li", null, ...rich(t))))),
-          h("div", null, h("h4", null, "Lab on your machine"), h("p", null, lv.lab.text), h("pre", null, h("code", null, lv.lab.cmds.join("\n"))),
+          h("div", null, h("h4", null, "Lab on your machine"), h("p", null, lv.lab.text), window.AQEngage.order(lv, h("pre", null, h("code", null, lv.lab.cmds.join("\n")))),
             h("h4", null, "In this repository"), h("ul", null, lv.refs.map((p) => h("li", null, h("a", { href: repoFile(p) }, p))))),
           h("div.level-links", null, h("span.muted.small", null, "Practise:"),
             lv.scenarios.map((id) => h("button.chip", { type: "button", onclick: () => practise(id) }, scenarioTitle[id])),
@@ -222,7 +221,7 @@
       fill.style.width = (answered / items.length * 100) + "%";
       if (answered < items.length) return;
       const pct = Math.round(correct / items.length * 100);
-      if (!exam) { const all = store.get("quiz", {}); all[mode] = Math.max(all[mode] || 0, pct); store.set("quiz", all); renderPath(); }
+      if (!exam) { const all = store.get("quiz", {}); all[mode] = Math.max(all[mode] || 0, pct); store.set("quiz", all); window.AQEngage.active(); renderPath(); }
       score.append(h("p.result", null, h("strong", null, `${pct}%. `), pct === 100 ? "Perfect score." : pct >= 75 ? "Strong. Review the explanations you missed." : "Read the explanations, practise the level's scenarios, and try again.",
         " ", h("button.linkish", { type: "button", onclick: renderQuiz }, exam ? "New exam" : "Try again")));
     };
@@ -488,12 +487,11 @@
   heroData();
   renderGuides();
   renderFlow();
-  renderPath();
   renderQuiz();
   renderDoctorList();
   renderFill();
   renderCheats();
   show();
-  // Deep links into the playground need it loaded first.
-  window.addEventListener("DOMContentLoaded", () => { if (/^#play\//.test(location.hash)) show(); });
+  // The path's lab check comes from engage.js, and deep links into the playground need it loaded first.
+  window.addEventListener("DOMContentLoaded", () => { renderPath(); if (/^#play\//.test(location.hash)) show(); });
 })();

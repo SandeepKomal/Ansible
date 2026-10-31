@@ -13,7 +13,7 @@ global.window = global.window || {};
 require(path.join(root, "site/data.js"));
 const { explain } = globalThis.AQXray;
 
-const r = explain(window.QUEST.xrayExample);
+const r = explain(window.TRACK.xrayExample);
 const warnsAt = (text) => r.lines.filter((l) => l.line.includes(text)).flatMap((l) => l.warns).join(" ");
 assert.match(warnsAt("become: true"), /every task as root/);
 assert.match(warnsAt("hosts: all"), /every host/);
